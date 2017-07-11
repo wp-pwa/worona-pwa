@@ -1,0 +1,31 @@
+{
+  "name": "worona-pwa",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node server.js",
+    "dev:debug": "node --inspect --debug-brk server.js",
+    "build": "next build",
+    "start": "NODE_ENV=production node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "next": "^3.0.1-beta.2",
+    "next-redux-wrapper": "^1.1.3",
+    "normalizr": "^3.2.3",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "react-redux": "^5.0.5",
+    "recompose": "^0.23.5",
+    "redux": "^3.7.1",
+    "redux-saga": "^0.15.4",
+    "superagent": "^3.5.2"
+  },
+  "devDependencies": {
+    "babel-preset-stage-0": "^6.24.1"
+  }
+}
