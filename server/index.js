@@ -1,8 +1,14 @@
 const { createServer } = require('http');
 const { parse } = require('url');
 const next = require('next');
+const changePath = require('./change-path');
 
 const dev = process.env.NODE_ENV !== 'production';
+const publicPath = process.env.PUBLIC_PATH || false;
+
+// If we are in WordPress dev mode, change the paths. If not, remove the paths.
+publicPath ? changePath(publicPath) : changePath('');
+
 const app = next({ dev });
 const handle = app.getRequestHandler();
 

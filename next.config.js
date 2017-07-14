@@ -1,18 +1,12 @@
 const isProd = process.env.NODE_ENV === 'production';
+const publicPath = process.env.PUBLIC_PATH || false;
 
 module.exports = {
-  // You may only need to add assetPrefix in the production.
-  assetPrefix: isProd ? 'http://localhost:3000' : 'http://localhost:3000',
+  // We need to point to localhost on dev because we are loading next in a different url.
+  assetPrefix: publicPath || '',
   webpack: (config, { dev }) => {
-    // Perform customizations to webpack config
-    config.output.publicPath = 'http://localhost:3000';
-    // Important: return the modified config
+    // We need this publicPath in order to make HMR work.
+    if (!isProd && publicPath) config.output.publicPath = publicPath + '/_next/webpack/';
     return config
-  },
-  webpackDevMiddleware: config => {
-    // Perform customizations to webpack dev middleware config
-    config.publicPath = 'http://localhost:3000';
-    // Important: return the modified config
-    return config;
   },
 };
