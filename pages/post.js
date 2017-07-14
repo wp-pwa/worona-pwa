@@ -3,6 +3,7 @@ import { normalize, schema } from 'normalizr';
 import { compose, createStore } from 'redux';
 import { connect } from 'react-redux';
 import withRedux from 'next-redux-wrapper';
+import Link from 'next/link';
 
 const settingSchema = new schema.Entity(
   'settings',
@@ -30,7 +31,17 @@ const makeStore = initialState => {
 };
 
 const Post = ({ query, siteId }) =>
-  <div>i am a post with id {query.p} and siteId {siteId}</div>;
+  <div>
+    <p>
+      i am a post with id {query.p} and siteId {siteId}.
+    </p>
+    <Link prefetch href='/'><a>Home</a></Link>
+    <style jsx>{`
+      p {
+        color: blue;
+      }
+    `}</style>
+  </div>;
 
 Post.getInitialProps = async ({ store, query, isServer }) => {
   if (isServer) {
@@ -49,6 +60,4 @@ Post.getInitialProps = async ({ store, query, isServer }) => {
   return { query };
 };
 
-export default compose(withRedux(makeStore), connect(state => ({ siteId: state.siteId })))(
-  Post
-);
+export default compose(withRedux(makeStore), connect(state => ({ siteId: state.siteId })))(Post);
