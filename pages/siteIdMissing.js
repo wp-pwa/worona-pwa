@@ -16,17 +16,14 @@ class Form extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    Router.push({
-      pathname: '/post?p=2',
-      query: Object.assign({}, Router.query, { siteId: this.state.siteId }),
-    });
+    window.location.href = `/?siteId=${this.state.siteId}`;
   }
 
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
         <label>
-          Please enter a Site ID:
+          Please enter your Site ID:
           {' '}
           <input type="text" value={this.state.siteId} onChange={this.handleChange} />
         </label>
@@ -37,7 +34,6 @@ class Form extends React.Component {
             background: lightgrey;
           }
         `}</style>
-        <Link href="/post?p=2" as="/?p=2"><a>Site</a></Link>
       </form>
     );
   }
