@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { DOMProperty } from 'react-dom/lib/ReactInjection';
 import { properties as DOMProperties } from 'react-dom/lib/DOMProperty';
+import Router from 'next/router';
 
 // By default React limit the set of valid DOM elements and attributes
 // (https://github.com/facebook/react/issues/140) this config whitelist
@@ -53,9 +54,9 @@ const Post = ({ query, siteId }) =>
     <p>
       i am a post with id {query.p} and siteId {siteId}.
     </p>
-    <Link prefetch href="/">
+    <div onClick={() => Router.push('/post?p=7', '/post?p=7', { shallow: true })}>
       <a>Home</a>
-    </Link>
+    </div>
     <style jsx>{`
       p {
         color: blue;
@@ -499,6 +500,7 @@ Post.getInitialProps = async ({ store, query, isServer }) => {
     store.dispatch({ type: 'SETTINGS_ADDED', settings });
     return { query };
   }
+  console.log('client getInitialProps');
   return { query };
 };
 
