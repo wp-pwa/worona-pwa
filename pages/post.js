@@ -55,8 +55,9 @@ const Post = ({ query, siteId }) =>
       i am a post with id {query.p} and siteId {siteId}.
     </p>
     <div onClick={() => Router.push('/post?p=7', '/post?p=7', { shallow: true })}>
-      <a>Home</a>
+      <a>Change url</a>
     </div>
+    <Link href="/"><a>Home</a></Link>
     <style jsx>{`
       p {
         color: blue;
