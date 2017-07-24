@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic';
 import Router from 'next/router';
 import { lifecycle } from 'recompose';
 import Link from 'next/link';
+import styled from 'styled-components';
 
 const Themes = ['some-theme', 'other-theme'];
 
@@ -19,6 +20,10 @@ const CurrentTheme = 'some-theme';
 const CurrentHome = ThemesComponents[CurrentTheme].Home;
 
 const OtherPackage = dynamic(import('../packages/other-package'));
+
+const Button = styled.button`
+  color: red;
+`;
 
 class Index extends Component {
   constructor(props) {
@@ -60,19 +65,14 @@ class Index extends Component {
       <div>
         {this.props.isServer && 'isServerRendered'}
         <CurrentHome />
-        <button onClick={this.props.theAction}>PUSH!</button>
-        <button onClick={this.props.theOtherAction}>OTHER PUSH!</button>
+        <Button onClick={this.props.theAction}>PUSH!</Button>
+        <Button onClick={this.props.theOtherAction}>OTHER PUSH!</Button>
         <Link prefetch href="/post?p=2">
           <a>
             Post 2 {this.props.hi}
           </a>
         </Link>
         <OtherPackage />
-        <style jsx>{`
-          button {
-            color: red;
-          }
-        `}</style>
       </div>
     );
   }

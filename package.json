@@ -28,10 +28,12 @@
     "redux": "^3.7.1",
     "redux-logger": "^3.0.6",
     "redux-saga": "^0.15.4",
+    "styled-components": "^2.1.1",
     "styled-jsx": "^1.0.8",
     "superagent": "^3.5.2"
   },
   "devDependencies": {
+    "babel-plugin-styled-components": "^1.1.7",
     "babel-preset-stage-0": "^6.24.1",
     "replace-in-file": "^2.5.3"
   }
