@@ -1,6 +1,6 @@
 const { createServer } = require('http');
 const { parse } = require('url');
-const next = require('next');
+const next = require('@worona/next');
 const changePath = require('./change-path');
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -22,10 +22,6 @@ app.prepare().then(() => {
 
     if (!query.siteId) {
       app.render(req, res, '/siteIdMissing', query);
-    } else if (query.p) {
-      app.render(req, res, '/post', query);
-    } else if (query.cat) {
-      app.render(req, res, '/category', query);
     } else {
       handle(req, res, parsedUrl);
     }

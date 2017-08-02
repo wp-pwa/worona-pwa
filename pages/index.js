@@ -3,11 +3,12 @@ import { compose, createStore, applyMiddleware } from 'redux';
 import { connect } from 'react-redux';
 import withRedux from 'next-redux-wrapper';
 import logger from 'redux-logger';
-import dynamic from 'next/dynamic';
-import Router from 'next/router';
+import dynamic from '@worona/next/dynamic';
+import Router from '@worona/next/router';
 import { lifecycle } from 'recompose';
-import Link from 'next/link';
+import Link from '@worona/next/link';
 import styled from 'styled-components';
+import { Hello as CurrentHome } from '../components';
 
 const Themes = ['some-theme', 'other-theme'];
 
@@ -17,12 +18,14 @@ const ThemesComponents = Themes.reduce(
 );
 
 const CurrentTheme = 'some-theme';
-const CurrentHome = ThemesComponents[CurrentTheme].Home;
+// const CurrentHome = ThemesComponents[CurrentTheme].Home;
+// const CurrentHome = require('../packages/some-theme/components').Home;
+// const CurrentHome = require('../components').default;
 
 const OtherPackage = dynamic(import('../packages/other-package'));
 
 const Button = styled.button`
-  color: red;
+  color: yellow;
 `;
 
 class Index extends Component {

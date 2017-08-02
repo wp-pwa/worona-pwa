@@ -1,6 +1,6 @@
-import Head from 'next/head';
-import Router from 'next/router';
-import Link from 'next/link';
+import Head from '@worona/next/head';
+import Router from '@worona/next/router';
+import Link from '@worona/next/link';
 
 class Form extends React.Component {
   constructor(props) {

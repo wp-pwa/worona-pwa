@@ -1,6 +1,6 @@
 {
   "presets": [
-    "next/babel",
+    "@worona/next/babel",
     "stage-0"
   ],
   "plugins": [

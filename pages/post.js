@@ -3,9 +3,9 @@ import { normalize, schema } from 'normalizr';
 import { compose, createStore } from 'redux';
 import { connect } from 'react-redux';
 import withRedux from 'next-redux-wrapper';
-import Link from 'next/link';
-import Head from 'next/head';
-import Router from 'next/router';
+import Link from '@worona/next/link';
+import Head from '@worona/next/head';
+import Router from '@worona/next/router';
 
 const settingSchema = new schema.Entity(
   'settings',
@@ -43,12 +43,7 @@ const Post = ({ query, siteId }) =>
     <div onClick={() => Router.push('/post?p=7', '/post?p=7', { shallow: true })}>
       <a>Change url</a>
     </div>
-    <Link href="/"><a>Home</a></Link>
-    <style jsx>{`
-      p {
-        color: blue;
-      }
-    `}</style>
+    <Link href="/category"><a>Cat</a></Link>
   </div>;
 
 Post.getInitialProps = async ({ store, query, isServer }) => {
