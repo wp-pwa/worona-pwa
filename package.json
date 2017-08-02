@@ -34,6 +34,7 @@
     "superagent": "^3.5.2"
   },
   "devDependencies": {
+    "babel-plugin-lodash": "^3.2.11",
     "babel-plugin-styled-components": "^1.1.7",
     "babel-preset-stage-0": "^6.24.1",
     "replace-in-file": "^2.5.3"
