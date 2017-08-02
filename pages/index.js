@@ -2,8 +2,11 @@ import { Component } from 'react';
 import { combineReducers } from 'redux';
 import { connect, Provider } from 'react-redux';
 import dynamic from '@worona/next/dynamic';
+import { normalize } from 'normalizr';
+import request from 'superagent';
 import { initStore } from '../core/store';
-import settings from '../core/settings/reducers';
+import reducers from '../core/reducers';
+import { settingsSchema } from '../core/schemas';
 
 const packages = [
   {
@@ -14,27 +17,33 @@ const packages = [
   },
 ];
 
-const reducers = {
-  settings,
-};
-
 class Index extends Component {
   constructor(props) {
     super(props);
-    const reducer = combineReducers(reducers);
-    this.store = initStore({ reducer, initialState: props.initialState });
+    // Init the store for the Provider using the initialState from getInitialProps.
+    this.store = initStore({
+      reducer: combineReducers(reducers),
+      initialState: props.initialState,
+    });
   }
 
-  static async getInitialProps({ req, serverProps }) {
+  static async getInitialProps({ req, serverProps, query }) {
+    // Server side rendering.
     if (req) {
+      // Retrieve site settings.
+      const cdn = process.env.PROD ? 'cdn' : 'precdn';
+      const { body } = await request(
+        `https://${cdn}.worona.io/api/v1/settings/site/${query.siteId}/app/prod/live`
+      );
+      const { results, entities: { settings } } = normalize(body, settingsSchema);
       // Populate reducers and create server redux store to pass initialState on SSR.
       packages.forEach(
         ({ namespace, requireFunction }) =>
           (reducers[namespace] = requireFunction().default.reducers)
       );
-      const reducer = combineReducers(reducers);
-      const store = initStore({ reducer, initialState: {} });
-      return { initialState: store.getState() };
+      const store = initStore({ reducer: combineReducers(reducers) });
+      return { initialState: store.getState(), settings };
+      // Client first rendering.
     } else if (serverProps) {
       // Populate reducers on client (async) for client redux store.
       const start = new Date();
@@ -48,6 +57,7 @@ class Index extends Component {
       const end = new Date();
       console.log(end - start);
     }
+    // Client, rest of the renders.
     return {};
   }
 
