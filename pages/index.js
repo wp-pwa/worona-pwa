@@ -1,122 +1,70 @@
 import { Component } from 'react';
-import { compose, createStore, applyMiddleware } from 'redux';
-import { connect } from 'react-redux';
-import withRedux from 'next-redux-wrapper';
-import logger from 'redux-logger';
+import { combineReducers } from 'redux';
+import { connect, Provider } from 'react-redux';
 import dynamic from '@worona/next/dynamic';
-import Router from '@worona/next/router';
-import { lifecycle } from 'recompose';
-import Link from '@worona/next/link';
-import styled from 'styled-components';
-import { Hello as CurrentHome } from '../components';
+import { initStore } from '../core/store';
+import settings from '../core/settings/reducers';
 
-const Themes = ['some-theme', 'other-theme'];
+const packages = [
+  {
+    namespace: 'generalSettings',
+    DynamicComponent: dynamic(import('../packages/general-settings-app-extension-worona')),
+    importFunction: () => import('../packages/general-settings-app-extension-worona'),
+    requireFunction: () => eval('require("../packages/general-settings-app-extension-worona")'),
+  },
+];
 
-const ThemesComponents = Themes.reduce(
-  (obj, key) => ({ ...obj, [key]: require(`../packages/${key}/components`) }),
-  {}
-);
-
-const CurrentTheme = 'some-theme';
-// const CurrentHome = ThemesComponents[CurrentTheme].Home;
-// const CurrentHome = require('../packages/some-theme/components').Home;
-// const CurrentHome = require('../components').default;
-
-const OtherPackage = dynamic(import('../packages/other-package'));
-
-const Button = styled.button`
-  color: yellow;
-`;
+const reducers = {
+  settings,
+};
 
 class Index extends Component {
   constructor(props) {
     super(props);
+    const reducer = combineReducers(reducers);
+    this.store = initStore({ reducer, initialState: props.initialState });
   }
 
   static async getInitialProps({ req, serverProps }) {
     if (req) {
-      return {
-        fromServer: 1,
-      };
+      // Populate reducers and create server redux store to pass initialState on SSR.
+      packages.forEach(
+        ({ namespace, requireFunction }) =>
+          (reducers[namespace] = requireFunction().default.reducers)
+      );
+      const reducer = combineReducers(reducers);
+      const store = initStore({ reducer, initialState: {} });
+      return { initialState: store.getState() };
+    } else if (serverProps) {
+      // Populate reducers on client (async) for client redux store.
+      const start = new Date();
+      const reducerPromises = packages.map(
+        async ({ namespace, importFunction }) => (await importFunction()).default.reducers
+      );
+      const packageReducers = await Promise.all(reducerPromises);
+      packageReducers.forEach((value, index) => {
+        reducers[packages[index].namespace] = value;
+      });
+      const end = new Date();
+      console.log(end - start);
     }
-    if (serverProps) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return {
-        fromFirstRender: 2,
-      };
-    }
-    return {
-      fromOtherRenders: 3,
-    };
+    return {};
   }
 
   static runInitialPropsAgain({ serverProps }) {
     return true;
   }
 
-  async componentDidMount() {
-    // const start = new Date();
-    // const imp = await import('../packages/other-package');
-    // const end = new Date();
-    // console.log(end - start);
-    // console.log(imp.actions);
-    // console.log(imp.types);
-  }
   render() {
-    // console.log(this.props);
     return (
-      <div>
-        {this.props.isServer && 'isServerRendered'}
-        <CurrentHome />
-        <Button onClick={this.props.theAction}>PUSH!</Button>
-        <Button onClick={this.props.theOtherAction}>OTHER PUSH!</Button>
-        <Link prefetch href="/post?p=2">
-          <a>
-            Post 2 {this.props.hi}
-          </a>
-        </Link>
-        <OtherPackage />
-      </div>
+      <Provider store={this.store}>
+        <div>
+          hola
+          {packages.map(({ namespace, DynamicComponent }) => <DynamicComponent key={namespace} />)}
+        </div>
+      </Provider>
     );
   }
 }
 
-const reducer = (state = {}, action) => {
-  switch (action.type) {
-    default:
-      return state;
-  }
-};
-
-const composeEnhancers =
-  (typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
-
-const makeStore = initialState => {
-  return createStore(reducer, initialState, composeEnhancers(applyMiddleware(logger)));
-};
-
-const pkgs = {
-  OtherPackage: 'other-package',
-  SomePackage: 'some-package',
-};
-
-const dep = namespace => require(`../packages/${pkgs[namespace]}/import`).default;
-
-export default compose(
-  // withRedux(makeStore),
-  // connect(null, dispatch => ({
-  //   theAction: async () => {
-  //     const start = new Date();
-  //     const OtherPackage = await import('../packages/other-package');
-  //     dispatch(OtherPackage.actions.otherAction());
-  //     const end = new Date();
-  //     console.log(end - start);
-  //   },
-  //   theOtherAction: async () => {
-  //     const start = new Date();
-  //     dispatch({ type: 'HI' });
-  //     const end = new Date();
-  //     console.log(end - start);
-  //   },
-  // }))
-)(Index);
+export default Index;
