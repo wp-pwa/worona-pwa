@@ -4,6 +4,7 @@ import { connect, Provider } from 'react-redux';
 import dynamic from '@worona/next/dynamic';
 import { normalize } from 'normalizr';
 import request from 'superagent';
+import { find } from 'lodash';
 import { initStore } from '../core/store';
 import reducers from '../core/reducers';
 import { settingsSchema } from '../core/schemas';
@@ -11,9 +12,24 @@ import { settingsSchema } from '../core/schemas';
 const packages = [
   {
     namespace: 'generalSettings',
-    DynamicComponent: dynamic(import('../packages/general-settings-app-extension-worona')),
-    importFunction: () => import('../packages/general-settings-app-extension-worona'),
-    requireFunction: () => eval('require("../packages/general-settings-app-extension-worona")'),
+    name: 'general-app-extension-worona',
+    DynamicComponent: dynamic(import('../packages/general-app-extension-worona')),
+    importFunction: () => import('../packages/general-app-extension-worona'),
+    requireFunction: () => eval('require("../packages/general-app-extension-worona")'),
+  },
+  {
+    namespace: 'theme',
+    name: 'starter-app-theme-worona',
+    DynamicComponent: dynamic(import('../packages/starter-app-theme-worona')),
+    importFunction: () => import('../packages/starter-app-theme-worona'),
+    requireFunction: () => eval('require("../packages/starter-app-theme-worona")'),
+  },
+  {
+    namespace: 'theme',
+    name: 'wp-org-connection-app-extension-worona',
+    DynamicComponent: dynamic(import('../packages/wp-org-connection-app-extension-worona')),
+    importFunction: () => import('../packages/wp-org-connection-app-extension-worona'),
+    requireFunction: () => eval('require("../packages/wp-org-connection-app-extension-worona")'),
   },
 ];
 
@@ -37,10 +53,11 @@ class Index extends Component {
       );
       const { results, entities: { settings } } = normalize(body, settingsSchema);
       // Populate reducers and create server redux store to pass initialState on SSR.
-      packages.forEach(
-        ({ namespace, requireFunction }) =>
-          (reducers[namespace] = requireFunction().default.reducers)
-      );
+      Object.keys(settings).forEach(name => {
+        const pkg = find(packages, { name });
+        if (!pkg) throw new Error(`Package ${name} not installed.`);
+        reducers[pkg.namespace] = pkg.requireFunction().default.reducers;
+      });
       const store = initStore({ reducer: combineReducers(reducers) });
       return { initialState: store.getState(), settings };
       // Client first rendering.
