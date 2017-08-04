@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const isProd = process.env.NODE_ENV === 'production';
 const publicPath = process.env.PUBLIC_PATH || false;
 
@@ -7,6 +8,8 @@ module.exports = {
   webpack: (config, { dev }) => {
     // We need this publicPath in order to make HMR work.
     if (!isProd && publicPath) config.output.publicPath = publicPath + '/_next/webpack/';
-    return config
+    // Ignore server sagas.
+    config.plugins.push(new webpack.IgnorePlugin(/sagas\/server\.js/));
+    return config;
   },
 };

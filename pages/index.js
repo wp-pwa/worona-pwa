@@ -19,33 +19,25 @@ const packages = [
     name: 'general-app-extension-worona',
     DynamicComponent: dynamic(import('../packages/general-app-extension-worona')),
     importPackage: () => import('../packages/general-app-extension-worona'),
-    requirePackage: () => eval('require("../packages/general-app-extension-worona")'),
-    // requireSagas: () => eval('require("../packages/general-app-extension-worona/sagas/server")'),
+    importServerSagas: () => import('../packages/general-app-extension-worona/sagas/server'),
   },
   {
     namespace: 'theme',
     name: 'starter-app-theme-worona',
     DynamicComponent: dynamic(import('../packages/starter-app-theme-worona')),
     importPackage: () => import('../packages/starter-app-theme-worona'),
-    requirePackage: () => eval('require("../packages/starter-app-theme-worona")'),
-    // requireSagas: () => eval('require("../packages/starter-app-theme-worona/sagas/server")'),
   },
   {
     namespace: 'connection',
     name: 'wp-org-connection-app-extension-worona',
     DynamicComponent: dynamic(import('../packages/wp-org-connection-app-extension-worona')),
     importPackage: () => import('../packages/wp-org-connection-app-extension-worona'),
-    requirePackage: () => eval('require("../packages/wp-org-connection-app-extension-worona")'),
-    // requireSagas: () =>
-    //   eval('require("../packages/wp-org-connection-app-extension-worona/sagas/server")'),
   },
   {
     namespace: 'notUsed',
     name: 'not-used-app-extension-worona',
     DynamicComponent: dynamic(import('../packages/not-used-app-extension-worona')),
     importPackage: () => import('../packages/not-used-app-extension-worona'),
-    requirePackage: () => eval('require("../packages/not-used-app-extension-worona")'),
-    // requireSagas: () => eval('require("../packages/not-used-app-extension-worona/sagas/server")'),
   },
 ];
 
@@ -72,12 +64,13 @@ class Index extends Component {
       const activatedPackages = Object.keys(settings).filter(
         name => name !== 'site-general-settings-worona'
       );
-      activatedPackages.forEach(name => {
+      for (const name of activatedPackages) {
         const pkg = find(packages, { name });
         if (!pkg) throw new Error(`Worona Package ${name} not installed.`);
-        reducers[pkg.namespace] = pkg.requirePackage().default.reducers;
-        if (pkg.requireSagas) sagas[name] = pkg.requireSagas();
-      });
+        const module = (await pkg.importPackage()).default;
+        if (module.reducers) reducers[pkg.namespace] = module.reducers;
+        if (pkg.importServerSagas) sagas[name] = (await pkg.importServerSagas()).default;
+      }
       // Create server redux store to pass initialState on SSR.
       const store = initStore({ reducer: combineReducers(reducers) });
       // Add settings to the state.
