@@ -5,11 +5,13 @@ import dynamic from '@worona/next/dynamic';
 import { normalize } from 'normalizr';
 import request from 'superagent';
 import { find } from 'lodash';
-import { initStore, sagaMiddleware } from '../core/store';
+import { initStore } from '../core/store';
 import reducers from '../core/reducers';
 import sagas from '../core/sagas';
 import { settingsSchema } from '../core/schemas';
 import { settingsUpdated } from '../core/settings/actions';
+
+const dev = process.env.NODE_ENV !== 'production';
 
 const packages = [
   {
@@ -57,13 +59,13 @@ class Index extends Component {
     });
   }
 
-  static async getInitialProps({ req, serverProps, query }) {
+  static async getInitialProps(params) {
     // Server side rendering.
-    if (req) {
+    if (params.req) {
       // Retrieve site settings.
       const cdn = process.env.PROD ? 'cdn' : 'precdn';
       const { body } = await request(
-        `https://${cdn}.worona.io/api/v1/settings/site/${query.siteId}/app/prod/live`
+        `https://${cdn}.worona.io/api/v1/settings/site/${params.query.siteId}/app/prod/live`
       );
       const { results, entities: { settings } } = normalize(body, settingsSchema);
       // Populate reducers.
@@ -81,14 +83,17 @@ class Index extends Component {
       // Add settings to the state.
       store.dispatch(settingsUpdated({ settings }));
       // Run and wait until all the server sagas have run.
-      await Promise.all(Object.values(sagas).map(saga => sagaMiddleware.run(saga)));
+      const startSagas = new Date();
+      const sagaPromises = Object.values(sagas).map(saga => store.runSaga(saga, params).done);
+      await Promise.all(sagaPromises);
+      if (dev) console.log(`\nTime to run server sagas: ${new Date() - startSagas}ms\n`);
       // Return server props.
       return { initialState: store.getState(), activatedPackages };
-    } else if (serverProps) {
+    } else if (params.serverProps) {
       // Client first rendering.
       // Populate reducers on client (async) for client redux store.
-      const start = new Date();
-      const reducerPromises = serverProps.activatedPackages.map(async name => {
+      const startStore = new Date();
+      const reducerPromises = params.serverProps.activatedPackages.map(async name => {
         const { namespace, importPackage } = find(packages, { name });
         const pkg = (await importPackage()).default;
         if (!pkg) throw new Error(`Worona Package ${name} not received.`);
@@ -98,8 +103,7 @@ class Index extends Component {
       packageReducers.forEach((value, index) => {
         reducers[packages[index].namespace] = value;
       });
-      const end = new Date();
-      console.log(`Time to create store: ${end - start}ms`);
+      if (dev) console.log(`Time to create store: ${new Date() - startStore}ms`);
     }
     // Client, rest of the renders.
     return {};

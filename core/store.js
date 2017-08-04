@@ -13,7 +13,7 @@ const composeDevTools =
 const composeEnhancers = composeWithDevTools({ serialize: false });
 
 // Init saga and create middlewares.
-export const sagaMiddleware = createSagaMiddleware();
+const sagaMiddleware = createSagaMiddleware();
 const clientMiddleware = [sagaMiddleware];
 const serverMiddleware = [sagaMiddleware];
 
@@ -36,15 +36,21 @@ if (dev) {
 export const initStore = ({ reducer, initialState = {} }) => {
   // Create store for the server.
   if (typeof window === 'undefined') {
-    return createStore(reducer, initialState, compose(applyMiddleware(...serverMiddleware)));
+    return {
+      ...createStore(reducer, initialState, compose(applyMiddleware(...serverMiddleware))),
+      runSaga: sagaMiddleware.run
+    };
   } else {
     // Create store for the client, only if it hasn't been created before.
     if (!store) {
-      store = createStore(
-        reducer,
-        initialState,
-        composeEnhancers(applyMiddleware(...clientMiddleware))
-      );
+      store = {
+        ...createStore(
+          reducer,
+          initialState,
+          composeEnhancers(applyMiddleware(...clientMiddleware))
+        ),
+        runSaga: sagaMiddleware.run
+      };
       if (dev) window.store = store;
     }
     return store;

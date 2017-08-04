@@ -1,3 +1,7 @@
+import { call } from 'redux-saga/effects';
+
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 export default function* serverSagas() {
-  console.log('hello from server settings sagas!');
+  yield call(delay, 1000);
 }
