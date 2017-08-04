@@ -33,7 +33,7 @@ if (dev) {
   }));
 }
 
-export const initStore = ({ reducer, initialState = {} }) => {
+export const initStore = ({ reducer, initialState = {}, sagas }) => {
   // Create store for the server.
   if (typeof window === 'undefined') {
     return {
@@ -52,6 +52,7 @@ export const initStore = ({ reducer, initialState = {} }) => {
         runSaga: sagaMiddleware.run
       };
       if (dev) window.store = store;
+      if (sagas) Object.values(sagas).forEach(saga => store.runSaga(saga));
     }
     return store;
   }

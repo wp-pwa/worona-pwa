@@ -48,6 +48,7 @@ class Index extends Component {
     this.store = initStore({
       reducer: combineReducers(reducers),
       initialState: props.initialState,
+      sagas: sagasClient,
     });
   }
 
