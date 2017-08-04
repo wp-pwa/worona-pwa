@@ -3,6 +3,8 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import createSagaMiddleware from 'redux-saga';
 import { createLogger } from 'redux-logger';
 
+const dev = process.env.NODE_ENV !== 'production';
+
 let store = null;
 
 // Add Redux Dev Tools.
@@ -16,7 +18,7 @@ const clientMiddleware = [sagaMiddleware];
 const serverMiddleware = [sagaMiddleware];
 
 // Add logger in dev mode.
-if (process.env.NODE_ENV !== 'production') {
+if (dev) {
   const { createLogger } = require('redux-logger');
   clientMiddleware.push(createLogger());
   serverMiddleware.push(createLogger({
@@ -43,7 +45,7 @@ export const initStore = ({ reducer, initialState = {} }) => {
         initialState,
         composeEnhancers(applyMiddleware(...clientMiddleware))
       );
-      window.store = store;
+      if (dev) window.store = store;
     }
     return store;
   }
