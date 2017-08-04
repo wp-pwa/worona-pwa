@@ -55,7 +55,7 @@ class Index extends Component {
   static async getInitialProps(params) {
     // Server side rendering.
     if (params.req) {
-      const sagas = (await import('../core/sagas.server')).default;
+      const sagasServer = (await import('../core/sagas.server')).default;
       // Retrieve site settings.
       const cdn = process.env.PROD ? 'cdn' : 'precdn';
       const { body } = await request(
@@ -71,7 +71,7 @@ class Index extends Component {
         if (!pkg) throw new Error(`Worona Package ${name} not installed.`);
         const module = (await pkg.importPackage()).default;
         if (module.reducers) reducers[pkg.namespace] = module.reducers;
-        if (pkg.importServerSagas) sagas[name] = (await pkg.importServerSagas()).default;
+        if (pkg.importServerSagas) sagasServer[name] = (await pkg.importServerSagas()).default;
       }
       // Create server redux store to pass initialState on SSR.
       const store = initStore({ reducer: combineReducers(reducers) });
@@ -79,24 +79,25 @@ class Index extends Component {
       store.dispatch(settingsUpdated({ settings }));
       // Run and wait until all the server sagas have run.
       const startSagas = new Date();
-      const sagaPromises = Object.values(sagas).map(saga => store.runSaga(saga, params).done);
+      const sagaPromises = Object.values(sagasServer).map(saga => store.runSaga(saga, params).done);
       await Promise.all(sagaPromises);
       if (dev) console.log(`\nTime to run server sagas: ${new Date() - startSagas}ms\n`);
       // Return server props.
       return { initialState: store.getState(), activatedPackages };
     } else if (params.serverProps) {
       // Client first rendering.
-      // Populate reducers on client (async) for client redux store.
+      // Populate reducers and sagas on client (async) for client redux store.
       const startStore = new Date();
-      const reducerPromises = params.serverProps.activatedPackages.map(async name => {
+      const packagePromises = params.serverProps.activatedPackages.map(async name => {
         const { namespace, importPackage } = find(packages, { name });
         const pkg = (await importPackage()).default;
         if (!pkg) throw new Error(`Worona Package ${name} not received.`);
-        return pkg.reducers;
+        return pkg;
       });
-      const packageReducers = await Promise.all(reducerPromises);
-      packageReducers.forEach((value, index) => {
-        reducers[packages[index].namespace] = value;
+      const packageModules = await Promise.all(packagePromises);
+      packageModules.forEach((module, index) => {
+        if (module.reducers) reducers[packages[index].namespace] = module.reducers;
+        if (module.sagas) sagasClient[packages[index].namespace] = module.sagas;
       });
       if (dev) console.log(`Time to create store: ${new Date() - startStore}ms`);
     }
