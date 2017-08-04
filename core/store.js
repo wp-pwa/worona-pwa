@@ -43,6 +43,7 @@ export const initStore = ({ reducer, initialState = {} }) => {
         initialState,
         composeEnhancers(applyMiddleware(...clientMiddleware))
       );
+      window.store = store;
     }
     return store;
   }
