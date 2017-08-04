@@ -25,11 +25,18 @@ const packages = [
     requireFunction: () => eval('require("../packages/starter-app-theme-worona")'),
   },
   {
-    namespace: 'theme',
+    namespace: 'connection',
     name: 'wp-org-connection-app-extension-worona',
     DynamicComponent: dynamic(import('../packages/wp-org-connection-app-extension-worona')),
     importFunction: () => import('../packages/wp-org-connection-app-extension-worona'),
     requireFunction: () => eval('require("../packages/wp-org-connection-app-extension-worona")'),
+  },
+  {
+    namespace: 'notUsed',
+    name: 'not-used-app-extension-worona',
+    DynamicComponent: dynamic(import('../packages/not-used-app-extension-worona')),
+    importFunction: () => import('../packages/not-used-app-extension-worona'),
+    requireFunction: () => eval('require("../packages/not-used-app-extension-worona")'),
   },
 ];
 
@@ -53,26 +60,32 @@ class Index extends Component {
       );
       const { results, entities: { settings } } = normalize(body, settingsSchema);
       // Populate reducers and create server redux store to pass initialState on SSR.
-      Object.keys(settings).forEach(name => {
+      const activatedPackages = Object.keys(settings).filter(
+        name => name !== 'site-general-settings-worona'
+      );
+      activatedPackages.forEach(name => {
         const pkg = find(packages, { name });
-        if (!pkg) throw new Error(`Package ${name} not installed.`);
+        if (!pkg) throw new Error(`Worona Package ${name} not installed.`);
         reducers[pkg.namespace] = pkg.requireFunction().default.reducers;
       });
       const store = initStore({ reducer: combineReducers(reducers) });
-      return { initialState: store.getState(), settings };
+      return { initialState: store.getState(), activatedPackages };
       // Client first rendering.
     } else if (serverProps) {
       // Populate reducers on client (async) for client redux store.
       const start = new Date();
-      const reducerPromises = packages.map(
-        async ({ namespace, importFunction }) => (await importFunction()).default.reducers
-      );
+      const reducerPromises = serverProps.activatedPackages.map(async name => {
+        const { namespace, importFunction } = find(packages, { name });
+        const pkg = (await importFunction()).default;
+        if (!pkg) throw new Error(`Worona Package ${name} not received.`);
+        return pkg.reducers;
+      });
       const packageReducers = await Promise.all(reducerPromises);
       packageReducers.forEach((value, index) => {
         reducers[packages[index].namespace] = value;
       });
       const end = new Date();
-      console.log(end - start);
+      console.log(`Time to create store: ${end - start}ms`);
     }
     // Client, rest of the renders.
     return {};
@@ -87,7 +100,10 @@ class Index extends Component {
       <Provider store={this.store}>
         <div>
           hola
-          {packages.map(({ namespace, DynamicComponent }) => <DynamicComponent key={namespace} />)}
+          {this.props.activatedPackages.map(name => {
+            const { namespace, DynamicComponent } = find(packages, { name });
+            return <DynamicComponent key={namespace} />;
+          })}
         </div>
       </Provider>
     );
