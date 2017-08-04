@@ -13,7 +13,7 @@ const composeDevTools =
 const composeEnhancers = composeWithDevTools({ serialize: false });
 
 // Init saga and create middlewares.
-const sagaMiddleware = createSagaMiddleware();
+export const sagaMiddleware = createSagaMiddleware();
 const clientMiddleware = [sagaMiddleware];
 const serverMiddleware = [sagaMiddleware];
 
@@ -50,5 +50,3 @@ export const initStore = ({ reducer, initialState = {} }) => {
     return store;
   }
 };
-
-export const runSaga = sagaMiddleware.run.bind(sagaMiddleware);
