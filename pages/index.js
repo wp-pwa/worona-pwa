@@ -8,6 +8,7 @@ import { find } from 'lodash';
 import { initStore } from '../core/store';
 import reducers from '../core/reducers';
 import { settingsSchema } from '../core/schemas';
+import { settingsUpdated } from '../core/settings/actions';
 
 const packages = [
   {
@@ -69,6 +70,7 @@ class Index extends Component {
         reducers[pkg.namespace] = pkg.requireFunction().default.reducers;
       });
       const store = initStore({ reducer: combineReducers(reducers) });
+      store.dispatch(settingsUpdated({ settings }));
       return { initialState: store.getState(), activatedPackages };
       // Client first rendering.
     } else if (serverProps) {

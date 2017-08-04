@@ -1,9 +1,12 @@
 import { combineReducers } from 'redux';
+import { SETTINGS_UPDATED } from '../types';
 
-export const items = (state = { someSetting: 123 }, action) => {
+export const collection = (state = {}, action) => {
+  if (action.type === SETTINGS_UPDATED)
+    return { ...state, ...action.settings };
   return state;
 };
 
 export default combineReducers({
-  items,
+  collection,
 });
