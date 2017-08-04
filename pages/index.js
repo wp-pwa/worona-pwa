@@ -7,7 +7,7 @@ import request from 'superagent';
 import { find } from 'lodash';
 import { initStore } from '../core/store';
 import reducers from '../core/reducers';
-import sagas from '../core/sagas';
+import sagasClient from '../core/sagas.client';
 import { settingsSchema } from '../core/schemas';
 import { settingsUpdated } from '../core/settings/actions';
 
@@ -54,6 +54,7 @@ class Index extends Component {
   static async getInitialProps(params) {
     // Server side rendering.
     if (params.req) {
+      const sagas = (await import('../core/sagas.server')).default;
       // Retrieve site settings.
       const cdn = process.env.PROD ? 'cdn' : 'precdn';
       const { body } = await request(
