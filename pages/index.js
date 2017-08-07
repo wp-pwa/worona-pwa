@@ -5,41 +5,60 @@ import dynamic from '@worona/next/dynamic';
 import { normalize } from 'normalizr';
 import request from 'superagent';
 import { find } from 'lodash';
+import promiseProps from 'promise-props';
 import { initStore } from '../core/store';
 import reducers from '../core/reducers';
-import sagasClient from '../core/sagas.client';
+import clientSagas from '../core/sagas.client';
 import { settingsSchema } from '../core/schemas';
 import { settingsUpdated } from '../core/settings/actions';
 
 const dev = process.env.NODE_ENV !== 'production';
 
-const packages = [
-  {
+const packages = {
+  'general-app-extension-worona': {
     namespace: 'generalSettings',
-    name: 'general-app-extension-worona',
-    DynamicComponent: dynamic(import('../packages/general-app-extension-worona')),
-    importPackage: () => import('../packages/general-app-extension-worona'),
-    importServerSagas: () => import('../packages/general-app-extension-worona/sagas/server'),
+    DynamicComponent: dynamic(import('../packages/general-app-extension-worona/src/pwa')),
+    importPackage: () => import('../packages/general-app-extension-worona/src/pwa'),
+    importServerSagas: () =>
+      import('../packages/general-app-extension-worona/src/pwa/sagas/server'),
   },
-  {
+  'starter-app-theme-worona': {
     namespace: 'theme',
-    name: 'starter-app-theme-worona',
-    DynamicComponent: dynamic(import('../packages/starter-app-theme-worona')),
-    importPackage: () => import('../packages/starter-app-theme-worona'),
+    DynamicComponent: dynamic(import('../packages/starter-app-theme-worona/src/pwa')),
+    importPackage: () => import('../packages/starter-app-theme-worona/src/pwa'),
   },
-  {
+  'wp-org-connection-app-extension-worona': {
     namespace: 'connection',
-    name: 'wp-org-connection-app-extension-worona',
-    DynamicComponent: dynamic(import('../packages/wp-org-connection-app-extension-worona')),
-    importPackage: () => import('../packages/wp-org-connection-app-extension-worona'),
+    DynamicComponent: dynamic(import('../packages/wp-org-connection-app-extension-worona/src/pwa')),
+    importPackage: () => import('../packages/wp-org-connection-app-extension-worona/src/pwa'),
   },
-  {
+  'not-used-app-extension-worona': {
     namespace: 'notUsed',
-    name: 'not-used-app-extension-worona',
-    DynamicComponent: dynamic(import('../packages/not-used-app-extension-worona')),
-    importPackage: () => import('../packages/not-used-app-extension-worona'),
+    DynamicComponent: dynamic(import('../packages/not-used-app-extension-worona/src/pwa')),
+    importPackage: () => import('../packages/not-used-app-extension-worona/src/pwa'),
   },
-];
+};
+
+const getModules = async (activatedPackages, functionName = 'importPackage') => {
+  // Get (and start) all the promises.
+  const importPromises = activatedPackages
+    .map(name => {
+      if (!packages[name]) throw new Error(`Worona Package ${name} failed (${functionName}).`);
+      return packages[name][functionName]
+        ? { name, importPackage: packages[name][functionName] }
+        : false;
+    })
+    .filter(item => item)
+    .reduce((obj, { name, importPackage }) => ({ ...obj, [name]: importPackage() }), {});
+  // Wait until all the promises have been resolved.
+  const packageDefaultModules = await promiseProps(importPromises);
+  // Iterate internally to get rid of 'default'.
+  const packageModules = Object.entries(packageDefaultModules).reduce(
+    (obj, [name, module]) => ({ ...obj, [name]: module.default }),
+    {}
+  );
+  return packageModules;
+};
 
 class Index extends Component {
   constructor(props) {
@@ -48,59 +67,65 @@ class Index extends Component {
     this.store = initStore({
       reducer: combineReducers(reducers),
       initialState: props.initialState,
-      sagas: sagasClient,
+      sagas: clientSagas,
     });
   }
 
   static async getInitialProps(params) {
     // Server side rendering.
     if (params.req) {
-      const sagasServer = (await import('../core/sagas.server')).default;
-      // Retrieve site settings.
+      // Get all the core server sagas.
+      const serverSagas = (await import('../core/sagas.server')).default;
+      // Retrieve and normalize site settings.
       const cdn = process.env.PROD ? 'cdn' : 'precdn';
       const { body } = await request(
         `https://${cdn}.worona.io/api/v1/settings/site/${params.query.siteId}/app/prod/live`
       );
       const { results, entities: { settings } } = normalize(body, settingsSchema);
-      // Populate reducers.
+
+      // Extract activated packages array from settings.
       const activatedPackages = Object.keys(settings).filter(
         name => name !== 'site-general-settings-worona'
       );
-      for (const name of activatedPackages) {
-        const pkg = find(packages, { name });
-        if (!pkg) throw new Error(`Worona Package ${name} not installed.`);
-        const module = (await pkg.importPackage()).default;
-        if (module.reducers) reducers[pkg.namespace] = module.reducers;
-        if (pkg.importServerSagas) sagasServer[name] = (await pkg.importServerSagas()).default;
-      }
+      // Wait until all the modules have been loaded, then add the reducers to the system.
+      const packageModules = await getModules(activatedPackages, 'importPackage');
+      Object.entries(packageModules).map(([name, module]) => {
+        if (module.reducers) reducers[packages[name].namespace] = module.reducers;
+      });
+
+      // Wait until all the server sagas have been loaded, then add the server sagas to the system.
+      const packageServerSagas = await getModules(activatedPackages, 'importServerSagas');
+      Object.entries(packageServerSagas).map(([name, serverSaga]) => {
+        if (serverSaga) serverSagas[name] = serverSaga;
+      });
+
       // Create server redux store to pass initialState on SSR.
       const store = initStore({ reducer: combineReducers(reducers) });
+
       // Add settings to the state.
       store.dispatch(settingsUpdated({ settings }));
+
       // Run and wait until all the server sagas have run.
       const startSagas = new Date();
-      const sagaPromises = Object.values(sagasServer).map(saga => store.runSaga(saga, params).done);
+      const sagaPromises = Object.values(serverSagas).map(saga => store.runSaga(saga, params).done);
       await Promise.all(sagaPromises);
       if (dev) console.log(`\nTime to run server sagas: ${new Date() - startSagas}ms\n`);
+
       // Return server props.
       return { initialState: store.getState(), activatedPackages };
-    } else if (params.serverProps) {
+
       // Client first rendering.
+    } else if (params.serverProps) {
       // Populate reducers and sagas on client (async) for client redux store.
       const startStore = new Date();
-      const packagePromises = params.serverProps.activatedPackages.map(async name => {
-        const { namespace, importPackage } = find(packages, { name });
-        const pkg = (await importPackage()).default;
-        if (!pkg) throw new Error(`Worona Package ${name} not received.`);
-        return pkg;
-      });
-      const packageModules = await Promise.all(packagePromises);
-      packageModules.forEach((module, index) => {
-        if (module.reducers) reducers[packages[index].namespace] = module.reducers;
-        if (module.sagas) sagasClient[packages[index].namespace] = module.sagas;
+      const packageModules = await getModules(params.serverProps.activatedPackages);
+      Object.entries(packageModules).map(([name, module]) => {
+        if (module.reducers) reducers[packages[name].namespace] = module.reducers;
+        if (module.sagas) clientSagas[packages[name].namespace] = module.sagas;
       });
       if (dev) console.log(`Time to create store: ${new Date() - startStore}ms`);
     }
+
     // Client, rest of the renders.
     return {};
   }
@@ -114,8 +139,9 @@ class Index extends Component {
       <Provider store={this.store}>
         <div>
           hola
+          {/* Add all the dynamic components of the activated packages to make next SSR work. */}
           {this.props.activatedPackages.map(name => {
-            const { namespace, DynamicComponent } = find(packages, { name });
+            const { namespace, DynamicComponent } = packages[name];
             return <DynamicComponent key={namespace} />;
           })}
         </div>
