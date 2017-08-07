@@ -26,6 +26,7 @@ const packages = {
     namespace: 'theme',
     DynamicComponent: dynamic(import('../packages/starter-app-theme-worona/src/pwa')),
     importPackage: () => import('../packages/starter-app-theme-worona/src/pwa'),
+    DynamicHome: dynamic(import('../packages/starter-app-theme-worona/src/pwa/components/Home')),
   },
   'wp-org-connection-app-extension-worona': {
     namespace: 'connection',
@@ -141,9 +142,15 @@ class Index extends Component {
           hola
           {/* Add all the dynamic components of the activated packages to make next SSR work. */}
           {this.props.activatedPackages.map(name => {
-            const { namespace, DynamicComponent } = packages[name];
-            return <DynamicComponent key={namespace} />;
+            const DynamicComponent = packages[name].DynamicComponent;
+            return <DynamicComponent key={name} />;
           })}
+          {this.props.activatedPackages
+            .filter(name => packages[name].namespace === 'theme')
+            .map(name => {
+              const DynamicHome = packages[name].DynamicHome;
+              return <DynamicHome key={name} />;
+            })}
         </div>
       </Provider>
     );
