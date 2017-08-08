@@ -21,16 +21,16 @@ const serverMiddleware = [sagaMiddleware];
 if (dev) {
   const { createLogger } = require('redux-logger');
   clientMiddleware.push(createLogger());
-  serverMiddleware.push(createLogger({
-    titleFormatter: ({ type }) => `\n\naction: ${type}\n`,
-    colors: {
-      title: false,
-      prevState: false,
-      action: false,
-      nextState: false,
-      error: false,
-    },
-  }));
+  // serverMiddleware.push(createLogger({
+  //   titleFormatter: ({ type }) => `\n\naction: ${type}\n`,
+  //   colors: {
+  //     title: false,
+  //     prevState: false,
+  //     action: false,
+  //     nextState: false,
+  //     error: false,
+  //   },
+  // }));
 }
 
 export const initStore = ({ reducer, initialState = {}, sagas }) => {
