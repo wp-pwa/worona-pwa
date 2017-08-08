@@ -28,7 +28,8 @@ const packages = {
     DynamicComponent: dynamic(import('../packages/starter-app-theme-worona/src/pwa')),
     importPackage: () => import('../packages/starter-app-theme-worona/src/pwa'),
     requirePackage: () => eval('require("../packages/starter-app-theme-worona/src/pwa")'),
-    DynamicHome: dynamic(import('../packages/starter-app-theme-worona/src/pwa/components/Home')),
+    Home: dynamic(import('../packages/starter-app-theme-worona/src/pwa/components/Home')),
+    Post: dynamic(import('../packages/starter-app-theme-worona/src/pwa/components/Post')),
   },
   'wp-org-connection-app-extension-worona': {
     namespace: 'connection',
@@ -144,7 +145,7 @@ class Index extends Component {
     return (
       <Provider store={this.store}>
         <div>
-          hola
+
           {/* Add all the dynamic components of the activated packages to make next SSR work. */}
           {this.props.activatedPackages.map(name => {
             const DynamicComponent = packages[name].DynamicComponent;
@@ -153,8 +154,8 @@ class Index extends Component {
           {this.props.activatedPackages
             .filter(name => packages[name].namespace === 'theme')
             .map(name => {
-              const DynamicHome = packages[name].DynamicHome;
-              return <DynamicHome key={name} />;
+              const DynamicComponent = packages[name].;
+              return <DynamicComponent key={name} />;
             })}
         </div>
       </Provider>
