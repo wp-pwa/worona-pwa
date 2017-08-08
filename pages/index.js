@@ -19,6 +19,7 @@ const packages = {
     namespace: 'generalSettings',
     DynamicComponent: dynamic(import('../packages/general-app-extension-worona/src/pwa')),
     importPackage: () => import('../packages/general-app-extension-worona/src/pwa'),
+    requirePackage: () => eval('require("../packages/general-app-extension-worona/src/pwa")'),
     importServerSagas: () =>
       import('../packages/general-app-extension-worona/src/pwa/sagas/server'),
   },
@@ -26,17 +27,21 @@ const packages = {
     namespace: 'theme',
     DynamicComponent: dynamic(import('../packages/starter-app-theme-worona/src/pwa')),
     importPackage: () => import('../packages/starter-app-theme-worona/src/pwa'),
+    requirePackage: () => eval('require("../packages/starter-app-theme-worona/src/pwa")'),
     DynamicHome: dynamic(import('../packages/starter-app-theme-worona/src/pwa/components/Home')),
   },
   'wp-org-connection-app-extension-worona': {
     namespace: 'connection',
     DynamicComponent: dynamic(import('../packages/wp-org-connection-app-extension-worona/src/pwa')),
     importPackage: () => import('../packages/wp-org-connection-app-extension-worona/src/pwa'),
+    requirePackage: () =>
+      eval('require("../packages/wp-org-connection-app-extension-worona/src/pwa")'),
   },
   'not-used-app-extension-worona': {
     namespace: 'notUsed',
     DynamicComponent: dynamic(import('../packages/not-used-app-extension-worona/src/pwa')),
     importPackage: () => import('../packages/not-used-app-extension-worona/src/pwa'),
+    requirePackage: () => eval('require("../packages/not-used-app-extension-worona/src/pwa")'),
   },
 };
 
@@ -89,7 +94,7 @@ class Index extends Component {
         name => name !== 'site-general-settings-worona'
       );
       // Wait until all the modules have been loaded, then add the reducers to the system.
-      const packageModules = await getModules(activatedPackages, 'importPackage');
+      const packageModules = await getModules(activatedPackages, 'requirePackage');
       Object.entries(packageModules).map(([name, module]) => {
         if (module.reducers) reducers[packages[name].namespace] = module.reducers;
       });
@@ -110,7 +115,7 @@ class Index extends Component {
       const startSagas = new Date();
       const sagaPromises = Object.values(serverSagas).map(saga => store.runSaga(saga, params).done);
       await Promise.all(sagaPromises);
-      if (dev) console.log(`\nTime to run server sagas: ${new Date() - startSagas}ms\n`);
+      console.log(`\nTime to run server sagas: ${new Date() - startSagas}ms\n`);
 
       // Return server props.
       return { initialState: store.getState(), activatedPackages };
@@ -124,7 +129,7 @@ class Index extends Component {
         if (module.reducers) reducers[packages[name].namespace] = module.reducers;
         if (module.sagas) clientSagas[packages[name].namespace] = module.sagas;
       });
-      if (dev) console.log(`Time to create store: ${new Date() - startStore}ms`);
+      console.log(`Time to create store: ${new Date() - startStore}ms`);
     }
 
     // Client, rest of the renders.
