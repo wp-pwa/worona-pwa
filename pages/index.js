@@ -2,6 +2,7 @@ import { Component } from 'react';
 import { combineReducers } from 'redux';
 import { connect, Provider } from 'react-redux';
 import dynamic from '@worona/next/dynamic';
+import Link from '@worona/next/link';
 import { normalize } from 'normalizr';
 import request from 'superagent';
 import { find } from 'lodash';
@@ -10,6 +11,7 @@ import { initStore } from '../core/store';
 import reducers from '../core/reducers';
 import clientSagas from '../core/sagas.client';
 import { settingsSchema } from '../core/schemas';
+import { activatedPackagesUpdated } from '../core/packages/actions';
 import { settingsUpdated } from '../core/settings/actions';
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -91,17 +93,21 @@ class Index extends Component {
       const { results, entities: { settings } } = normalize(body, settingsSchema);
 
       // Extract activated packages array from settings.
-      const activatedPackages = Object.keys(settings).filter(
-        name => name !== 'site-general-settings-worona'
-      );
+      const activatedPackages = Object.values(settings)
+        .filter(pkg => pkg.woronaInfo.namespace !== 'generalSite')
+        .reduce((obj, pkg) => ({ ...obj, [pkg.woronaInfo.namespace]: pkg.woronaInfo.name }), {});
+
       // Wait until all the modules have been loaded, then add the reducers to the system.
-      const packageModules = await getModules(activatedPackages, 'requirePackage');
+      const packageModules = await getModules(Object.values(activatedPackages), 'requirePackage');
       Object.entries(packageModules).map(([name, module]) => {
         if (module.reducers) reducers[packages[name].namespace] = module.reducers;
       });
 
       // Wait until all the server sagas have been loaded, then add the server sagas to the system.
-      const packageServerSagas = await getModules(activatedPackages, 'importServerSagas');
+      const packageServerSagas = await getModules(
+        Object.values(activatedPackages),
+        'importServerSagas'
+      );
       Object.entries(packageServerSagas).map(([name, serverSaga]) => {
         if (serverSaga) serverSagas[name] = serverSaga;
       });
@@ -110,6 +116,7 @@ class Index extends Component {
       const store = initStore({ reducer: combineReducers(reducers) });
 
       // Add settings to the state.
+      store.dispatch(activatedPackagesUpdated({ packages: activatedPackages }));
       store.dispatch(settingsUpdated({ settings }));
 
       // Run and wait until all the server sagas have run.
@@ -125,7 +132,7 @@ class Index extends Component {
     } else if (params.serverProps) {
       // Populate reducers and sagas on client (async) for client redux store.
       const startStore = new Date();
-      const packageModules = await getModules(params.serverProps.activatedPackages);
+      const packageModules = await getModules(Object.values(params.serverProps.activatedPackages));
       Object.entries(packageModules).map(([name, module]) => {
         if (module.reducers) reducers[packages[name].namespace] = module.reducers;
         if (module.sagas) clientSagas[packages[name].namespace] = module.sagas;
@@ -145,16 +152,18 @@ class Index extends Component {
     return (
       <Provider store={this.store}>
         <div>
-
+          <Link href="?p=57">
+            <a>Link</a>
+          </Link>
           {/* Add all the dynamic components of the activated packages to make next SSR work. */}
-          {this.props.activatedPackages.map(name => {
+          {Object.values(this.props.activatedPackages).map(name => {
             const DynamicComponent = packages[name].DynamicComponent;
             return <DynamicComponent key={name} />;
           })}
-          {this.props.activatedPackages
+          {Object.values(this.props.activatedPackages)
             .filter(name => packages[name].namespace === 'theme')
             .map(name => {
-              const DynamicComponent = packages[name].;
+              const DynamicComponent = packages[name].Home;
               return <DynamicComponent key={name} />;
             })}
         </div>
