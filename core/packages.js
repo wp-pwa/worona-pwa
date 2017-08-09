@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import NextLink from '@worona/next/link';
 import dynamic from '@worona/next/dynamic';
+import { getPackages, getTheme } from './build/selectors';
 
 export const packages = {
   'general-app-extension-worona': {
@@ -43,9 +44,9 @@ const Link = connect(state => ({
   </NextLink>
 );
 
-const App = ({ extensions, theme }) => {
-  const DynamicPackages = extensions.map(name => packages[name].DynamicComponent);
-  const DynamicTheme = packages[theme].Home;
+const App = ({ activePackages, activeTheme }) => {
+  const DynamicPackages = activePackages.map(name => packages[name].DynamicComponent);
+  const DynamicTheme = packages[activeTheme].Home;
   return (
     <div>
       <Link href={{ query: { p: 57 } }} as="/holaaaa">
@@ -59,6 +60,6 @@ const App = ({ extensions, theme }) => {
 };
 
 export default connect(state => ({
-  extensions: [...Object.values(state.build.extensions), state.build.theme],
-  theme: state.build.theme,
+  activePackages: getPackages(state),
+  activeTheme: getTheme(state),
 }))(App);
