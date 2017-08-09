@@ -59,6 +59,6 @@ const App = ({ extensions, theme }) => {
 };
 
 export default connect(state => ({
-  extensions: [...Object.values(state.packages.extensions), state.packages.theme],
-  theme: state.packages.theme,
+  extensions: [...Object.values(state.build.extensions), state.build.theme],
+  theme: state.build.theme,
 }))(App);

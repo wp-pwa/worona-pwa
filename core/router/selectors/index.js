@@ -4,7 +4,7 @@ export const getAsPath = state => state.router.asPath;
 export const getQuery = state => state.router.query;
 export const getPathname = state => state.router.pathname;
 
-export const geType = createSelector({
+export const geType = createSelector(
   getQuery,
   query => {
     const { p, cat, tag, author, page_id, s, attachment_id } = query;
@@ -17,9 +17,9 @@ export const geType = createSelector({
     else if (attachment_id) return 'attachment_id';
     else return 'home';
     }
-});
+);
 
-export const getId = createSelector({
+export const getId = createSelector(
   getQuery,
   query => {
     const { p, cat, tag, author, page_id, s, attachment_id } = query;
@@ -30,6 +30,6 @@ export const getId = createSelector({
     else if (page_id) return page_id;
     else if (s) return s;
     else if (attachment_id) return attachment_id;
-    else return false;
+    else return 0;
     }
-});
+);

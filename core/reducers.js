@@ -1,10 +1,10 @@
 import router from './router/reducers';
-import packages from './packages/reducers';
+import build from './build/reducers';
 import settings from './settings/reducers';
 
 const reducers = {
   router,
-  packages,
+  build,
   settings,
 };
 

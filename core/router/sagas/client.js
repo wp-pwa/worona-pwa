@@ -2,6 +2,7 @@ import Router from '@worona/next/router';
 import { fork, take, put, race, all } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
 import * as actions from '../actions';
+import worona from '../../worona';
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -32,9 +33,8 @@ const getPath = () =>
 function* routeChangeSaga() {
   // Add router to worona for development.
   if (dev) {
-    window.worona = window.worona || {};
-    window.worona.router = Router;
-    window.worona.router.getPath = getPath;
+    worona.router = Router;
+    worona.router.getPath = getPath;
   }
 
   // Initializate router event channels.

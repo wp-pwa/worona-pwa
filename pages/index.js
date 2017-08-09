@@ -9,12 +9,17 @@ import { initStore } from '../core/store';
 import reducers from '../core/reducers';
 import clientSagas from '../core/sagas.client';
 import { settingsSchema } from '../core/schemas';
-import { activatedPackagesUpdated } from '../core/packages/actions';
-import { siteIdUpdated, settingsUpdated } from '../core/settings/actions';
-import { routeChangeSucceed } from '../core/router/actions';
+import buildModule from '../core/build';
+import routerModule from '../core/router';
+import settingsModule from '../core/settings';
 import App, { packages } from '../core/packages';
+import worona from '../core/worona';
 
 const dev = process.env.NODE_ENV !== 'production';
+
+worona.packages.build = buildModule;
+worona.packages.router = routerModule;
+worona.packages.settings = settingsModule;
 
 const getModules = async (activatedPackages, functionName = 'importPackage') => {
   // Get (and start) all the promises.
@@ -84,11 +89,12 @@ class Index extends Component {
       const store = initStore({ reducer: combineReducers(reducers) });
 
       // Add settings to the state.
-      store.dispatch(siteIdUpdated({ siteId: params.query.siteId }));
+      debugger;
+      store.dispatch(settingsModule.actions.siteIdUpdated({ siteId: params.query.siteId }));
       const { query, pathname, asPath } = params;
-      store.dispatch(routeChangeSucceed({ query, pathname, asPath }));
-      store.dispatch(activatedPackagesUpdated({ packages: activatedPackages }));
-      store.dispatch(settingsUpdated({ settings }));
+      store.dispatch(routerModule.actions.routeChangeSucceed({ query, pathname, asPath }));
+      store.dispatch(buildModule.actions.activatedPackagesUpdated({ packages: activatedPackages }));
+      store.dispatch(settingsModule.actions.settingsUpdated({ settings }));
 
       // Run and wait until all the server sagas have run.
       const startSagas = new Date();
@@ -107,6 +113,7 @@ class Index extends Component {
       Object.entries(packageModules).map(([name, module]) => {
         if (module.reducers) reducers[packages[name].namespace] = module.reducers;
         if (module.sagas) clientSagas[packages[name].namespace] = module.sagas;
+        worona.packages[packages[name].namespace] = module;
       });
       console.log(`Time to create store: ${new Date() - startStore}ms`);
     }

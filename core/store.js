@@ -2,6 +2,7 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import createSagaMiddleware from 'redux-saga';
 import { createLogger } from 'redux-logger';
+import worona from './worona';
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -52,10 +53,7 @@ export const initStore = ({ reducer, initialState = {}, sagas }) => {
         runSaga: sagaMiddleware.run,
       };
       // Add it to worona if we are in development.
-      if (dev) {
-        window.worona = window.worona || {};
-        window.worona.store = store;
-      }
+      if (dev) worona.store = store;
       // Start all the client sagas.
       if (sagas) Object.values(sagas).forEach(saga => store.runSaga(saga));
     }
