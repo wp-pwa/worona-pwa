@@ -32,10 +32,8 @@ const getPath = () =>
 
 function* routeChangeSaga() {
   // Add router to worona for development.
-  if (dev) {
-    worona.router = Router;
-    worona.router.getPath = getPath;
-  }
+  worona.router = Router;
+  worona.router.getPath = getPath;
 
   // Initializate router event channels.
   const requestedEvents = routeChangeRequested();
