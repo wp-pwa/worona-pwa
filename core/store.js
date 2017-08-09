@@ -20,7 +20,7 @@ const serverMiddleware = [sagaMiddleware];
 // Add logger in dev mode.
 if (dev) {
   const { createLogger } = require('redux-logger');
-  clientMiddleware.push(createLogger());
+  clientMiddleware.push(createLogger({ diff: true }));
   // serverMiddleware.push(createLogger({
   //   titleFormatter: ({ type }) => `\n\naction: ${type}\n`,
   //   colors: {
@@ -38,7 +38,7 @@ export const initStore = ({ reducer, initialState = {}, sagas }) => {
   if (typeof window === 'undefined') {
     return {
       ...createStore(reducer, initialState, compose(applyMiddleware(...serverMiddleware))),
-      runSaga: sagaMiddleware.run
+      runSaga: sagaMiddleware.run,
     };
   } else {
     // Create store for the client, only if it hasn't been created before.
@@ -49,9 +49,14 @@ export const initStore = ({ reducer, initialState = {}, sagas }) => {
           initialState,
           composeEnhancers(applyMiddleware(...clientMiddleware))
         ),
-        runSaga: sagaMiddleware.run
+        runSaga: sagaMiddleware.run,
       };
-      if (dev) window.store = store;
+      // Add it to worona if we are in development.
+      if (dev) {
+        window.worona = window.worona || {};
+        window.worona.store = store;
+      }
+      // Start all the client sagas.
       if (sagas) Object.values(sagas).forEach(saga => store.runSaga(saga));
     }
     return store;

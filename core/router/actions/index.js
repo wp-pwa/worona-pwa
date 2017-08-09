@@ -1,15 +1,17 @@
 import * as types from '../types';
 
-export const routeChangeRequested = ({ ulr }) => ({
+export const routeChangeRequested = ({ asPath }) => ({
   type: types.ROUTE_CHANGE_REQUESTED,
-  url,
+  asPath,
 });
-export const routeChangeSucceed = ({ ulr }) => ({
+export const routeChangeSucceed = ({ asPath, query, pathname }) => ({
   type: types.ROUTE_CHANGE_SUCCEED,
-  url,
+  asPath,
+  query,
+  pathname,
 });
-export const routeChangeFailed = ({ ulr, error }) => ({
+export const routeChangeFailed = ({ asPath, error }) => ({
   type: types.ROUTE_CHANGE_FAILED,
-  url,
+  asPath,
   error,
 });

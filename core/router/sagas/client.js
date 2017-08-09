@@ -3,35 +3,57 @@ import { fork, take, put, race, all } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
 import * as actions from '../actions';
 
+const dev = process.env.NODE_ENV !== 'production';
+
 const routeChangeRequested = () =>
   eventChannel(emitter => {
-    Router.routeChangeStart = url => emitter({ url });
-    return () => (Router.routeChangeStart = null);
+    Router.onRouteChangeStart = asPath => emitter({ asPath });
+    return () => (Router.onRouteChangeStart = null);
   });
 const routeChangeSucceed = () =>
   eventChannel(emitter => {
-    Router.routeChangeComplete = url => emitter({ url });
-    return () => (Router.routeChangeComplete = null);
+    Router.onRouteChangeComplete = asPath => emitter({ asPath });
+    return () => (Router.onRouteChangeComplete = null);
   });
 const routeChangeFailed = () =>
   eventChannel(emitter => {
-    Router.routeChangeError = (url, error) => emitter({ url, error });
-    return () => (Router.routeChangeError = null);
+    Router.onRouteChangeError = (asPath, error) => emitter({ asPath, error });
+    return () => (Router.onRouteChangeError = null);
   });
 
+const getPath = () =>
+  Object.entries(Router.query)
+    .map(([key, value]) => `${key}=${value}`)
+    .reduce(
+      (acc, q, i) => `${acc}${i !== 0 ? '&' : ''}${q}`,
+      `${window.location.origin}${Router.pathname}?`
+    );
+
 function* routeChangeSaga() {
+  // Add router to worona for development.
+  if (dev) {
+    window.worona = window.worona || {};
+    window.worona.router = Router;
+    window.worona.router.getPath = getPath;
+  }
+
+  // Initializate router event channels.
   const requestedEvents = routeChangeRequested();
   const succeedEvents = routeChangeSucceed();
   const failedEvents = routeChangeFailed();
+
+  // Track router events and dispatch them to redux.
   while (true) {
-    const { start, complete, failed } = yield race({
+    const { requested, succeed, failed } = yield race({
       requested: take(requestedEvents),
       succeed: take(succeedEvents),
       failed: take(failedEvents),
     });
     if (requested) yield put(actions.routeChangeRequested(requested));
-    else if (succeed) yield put(actions.routeChangeSucceed(succeed));
-    else if (failed) yield put(actions.routeChangeFailed(failed));
+    else if (succeed) {
+      const { query, pathname } = Router;
+      yield put(actions.routeChangeSucceed({ query, pathname, asPath: succeed.asPath }));
+    } else if (failed) yield put(actions.routeChangeFailed(failed));
   }
 }
 

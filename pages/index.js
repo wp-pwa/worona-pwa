@@ -1,8 +1,6 @@
 import { Component } from 'react';
 import { combineReducers } from 'redux';
 import { connect, Provider } from 'react-redux';
-import dynamic from '@worona/next/dynamic';
-import Link from '@worona/next/link';
 import { normalize } from 'normalizr';
 import request from 'superagent';
 import { find } from 'lodash';
@@ -12,41 +10,11 @@ import reducers from '../core/reducers';
 import clientSagas from '../core/sagas.client';
 import { settingsSchema } from '../core/schemas';
 import { activatedPackagesUpdated } from '../core/packages/actions';
-import { settingsUpdated } from '../core/settings/actions';
+import { siteIdUpdated, settingsUpdated } from '../core/settings/actions';
+import { routeChangeSucceed } from '../core/router/actions';
+import App, { packages } from '../core/packages';
 
 const dev = process.env.NODE_ENV !== 'production';
-
-const packages = {
-  'general-app-extension-worona': {
-    namespace: 'generalSettings',
-    DynamicComponent: dynamic(import('../packages/general-app-extension-worona/src/pwa')),
-    importPackage: () => import('../packages/general-app-extension-worona/src/pwa'),
-    requirePackage: () => eval('require("../packages/general-app-extension-worona/src/pwa")'),
-    importServerSagas: () =>
-      import('../packages/general-app-extension-worona/src/pwa/sagas/server'),
-  },
-  'starter-app-theme-worona': {
-    namespace: 'theme',
-    DynamicComponent: dynamic(import('../packages/starter-app-theme-worona/src/pwa')),
-    importPackage: () => import('../packages/starter-app-theme-worona/src/pwa'),
-    requirePackage: () => eval('require("../packages/starter-app-theme-worona/src/pwa")'),
-    Home: dynamic(import('../packages/starter-app-theme-worona/src/pwa/components/Home')),
-    Post: dynamic(import('../packages/starter-app-theme-worona/src/pwa/components/Post')),
-  },
-  'wp-org-connection-app-extension-worona': {
-    namespace: 'connection',
-    DynamicComponent: dynamic(import('../packages/wp-org-connection-app-extension-worona/src/pwa')),
-    importPackage: () => import('../packages/wp-org-connection-app-extension-worona/src/pwa'),
-    requirePackage: () =>
-      eval('require("../packages/wp-org-connection-app-extension-worona/src/pwa")'),
-  },
-  'not-used-app-extension-worona': {
-    namespace: 'notUsed',
-    DynamicComponent: dynamic(import('../packages/not-used-app-extension-worona/src/pwa')),
-    importPackage: () => import('../packages/not-used-app-extension-worona/src/pwa'),
-    requirePackage: () => eval('require("../packages/not-used-app-extension-worona/src/pwa")'),
-  },
-};
 
 const getModules = async (activatedPackages, functionName = 'importPackage') => {
   // Get (and start) all the promises.
@@ -116,6 +84,9 @@ class Index extends Component {
       const store = initStore({ reducer: combineReducers(reducers) });
 
       // Add settings to the state.
+      store.dispatch(siteIdUpdated({ siteId: params.query.siteId }));
+      const { query, pathname, asPath } = params;
+      store.dispatch(routeChangeSucceed({ query, pathname, asPath }));
       store.dispatch(activatedPackagesUpdated({ packages: activatedPackages }));
       store.dispatch(settingsUpdated({ settings }));
 
@@ -151,22 +122,7 @@ class Index extends Component {
   render() {
     return (
       <Provider store={this.store}>
-        <div>
-          <Link href="?p=57">
-            <a>Link</a>
-          </Link>
-          {/* Add all the dynamic components of the activated packages to make next SSR work. */}
-          {Object.values(this.props.activatedPackages).map(name => {
-            const DynamicComponent = packages[name].DynamicComponent;
-            return <DynamicComponent key={name} />;
-          })}
-          {Object.values(this.props.activatedPackages)
-            .filter(name => packages[name].namespace === 'theme')
-            .map(name => {
-              const DynamicComponent = packages[name].Home;
-              return <DynamicComponent key={name} />;
-            })}
-        </div>
+        <App />
       </Provider>
     );
   }
