@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import NextLink from '@worona/next/link';
 import dynamic from '@worona/next/dynamic';
 import { getPackages, getTheme } from './build/selectors';
+import Link from './router/components/Link';
 
 export const packages = {
   'general-app-extension-worona': {
@@ -35,14 +36,6 @@ export const packages = {
     requirePackage: () => eval('require("../packages/not-used-app-extension-worona/src/pwa")'),
   },
 };
-
-const Link = connect(state => ({
-  siteId: state.settings.siteId,
-}))(({ href, as, children, siteId }) =>
-  <NextLink href={{ ...href, query: { ...href.query, siteId } }} as={as}>
-    {children}
-  </NextLink>
-);
 
 const App = ({ activePackages, activeTheme }) => {
   const DynamicPackages = activePackages.map(name => packages[name].DynamicComponent);
