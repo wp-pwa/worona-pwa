@@ -16,7 +16,6 @@ export const pathname = (state = {}, { type, pathname }) => {
   return state;
 };
 
-
 export default combineReducers({
   asPath,
   query,
