@@ -3,8 +3,8 @@ import NextLink from '@worona/next/link';
 import { connect } from 'react-redux';
 import { getSiteId } from '../../../settings/selectors';
 
-const Link = ({ href, as, children, siteId }) =>
-  <NextLink href={{ ...href, query: { ...href.query, siteId } }} as={as}>
+const Link = ({ query, as, children, siteId }) =>
+  <NextLink href={{ pathname: '/', query: { ...query, siteId } }} as={as}>
     {children}
   </NextLink>
 

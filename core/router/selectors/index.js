@@ -4,7 +4,7 @@ export const getAsPath = state => state.router.asPath;
 export const getQuery = state => state.router.query;
 export const getPathname = state => state.router.pathname;
 
-export const geType = createSelector(
+export const getType = createSelector(
   getQuery,
   query => {
     const { p, cat, tag, author, page_id, s, attachment_id } = query;

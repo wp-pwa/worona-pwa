@@ -13,13 +13,13 @@ import buildModule from '../core/build';
 import routerModule from '../core/router';
 import settingsModule from '../core/settings';
 import App, { packages } from '../core/packages';
-import worona from '../core/worona';
+import { addPackage } from 'worona-deps';
 
 const dev = process.env.NODE_ENV !== 'production';
 
-worona.packages.build = buildModule;
-worona.packages.router = routerModule;
-worona.packages.settings = settingsModule;
+addPackage({ namespace: 'build', module: buildModule });
+addPackage({ namespace: 'router', module: routerModule });
+addPackage({ namespace: 'settings', module: settingsModule });
 
 const getModules = async (activatedPackages, functionName = 'importPackage') => {
   // Get (and start) all the promises.
@@ -74,6 +74,7 @@ class Index extends Component {
       const packageModules = await getModules(Object.values(activatedPackages), 'requirePackage');
       Object.entries(packageModules).map(([name, module]) => {
         if (module.reducers) reducers[packages[name].namespace] = module.reducers;
+        addPackage({ namespace: packages[name].namespace, module });
       });
 
       // Wait until all the server sagas have been loaded, then add the server sagas to the system.
@@ -89,7 +90,6 @@ class Index extends Component {
       const store = initStore({ reducer: combineReducers(reducers) });
 
       // Add settings to the state.
-      debugger;
       store.dispatch(settingsModule.actions.siteIdUpdated({ siteId: params.query.siteId }));
       const { query, pathname, asPath } = params;
       store.dispatch(routerModule.actions.routeChangeSucceed({ query, pathname, asPath }));
@@ -113,7 +113,7 @@ class Index extends Component {
       Object.entries(packageModules).map(([name, module]) => {
         if (module.reducers) reducers[packages[name].namespace] = module.reducers;
         if (module.sagas) clientSagas[packages[name].namespace] = module.sagas;
-        worona.packages[packages[name].namespace] = module;
+        addPackage({ namespace: packages[name].namespace, module });
       });
       console.log(`Time to create store: ${new Date() - startStore}ms`);
     }

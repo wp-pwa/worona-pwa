@@ -34,7 +34,8 @@
     "reselect": "^3.0.1",
     "styled-components": "^2.1.1",
     "styled-jsx": "^1.0.8",
-    "superagent": "^3.5.2"
+    "superagent": "^3.5.2",
+    "worona-deps": "^2.0.3"
   },
   "devDependencies": {
     "babel-plugin-lodash": "^3.2.11",

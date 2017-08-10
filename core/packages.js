@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import NextLink from '@worona/next/link';
 import dynamic from '@worona/next/dynamic';
 import { getPackages, getTheme } from './build/selectors';
-import Link from './router/components/Link';
+import { getType } from './router/selectors';
+import { dep } from 'worona-deps';
 
 export const packages = {
   'general-app-extension-worona': {
@@ -19,8 +20,6 @@ export const packages = {
     DynamicComponent: dynamic(import('../packages/starter-app-theme-worona/src/pwa')),
     importPackage: () => import('../packages/starter-app-theme-worona/src/pwa'),
     requirePackage: () => eval('require("../packages/starter-app-theme-worona/src/pwa")'),
-    Home: dynamic(import('../packages/starter-app-theme-worona/src/pwa/components/Home')),
-    Post: dynamic(import('../packages/starter-app-theme-worona/src/pwa/components/Post')),
   },
   'wp-org-connection-app-extension-worona': {
     namespace: 'connection',
@@ -37,15 +36,12 @@ export const packages = {
   },
 };
 
-const App = ({ activePackages, activeTheme }) => {
-  const DynamicPackages = activePackages.map(name => packages[name].DynamicComponent);
-  const DynamicTheme = packages[activeTheme].Home;
+const App = ({ pkgs, theme, type }) => {
+  const DynamicPackages = pkgs.map(name => packages[name].DynamicComponent);
+  const Theme = dep('theme', 'Theme');
   return (
     <div>
-      <Link href={{ query: { p: 57 } }} as="/holaaaa">
-        <a>Link</a>
-      </Link>
-      <DynamicTheme />
+      <Theme />
       {/* Add all the dynamic components of the activated packages to make next SSR work. */}
       {DynamicPackages.map((DynamicPackage, index) => <DynamicPackage key={index} />)}
     </div>
@@ -53,6 +49,7 @@ const App = ({ activePackages, activeTheme }) => {
 };
 
 export default connect(state => ({
-  activePackages: getPackages(state),
-  activeTheme: getTheme(state),
+  pkgs: getPackages(state),
+  theme: getTheme(state),
+  type: getType(state),
 }))(App);

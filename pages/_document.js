@@ -15,6 +15,7 @@ export default class MyDocument extends Document {
       <html>
         <Head>
           <title>Worona</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           {styleTags}
         </Head>
         <body>

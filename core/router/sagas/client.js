@@ -2,7 +2,7 @@ import Router from '@worona/next/router';
 import { fork, take, put, race, all } from 'redux-saga/effects';
 import { eventChannel } from 'redux-saga';
 import * as actions from '../actions';
-import worona from '../../worona';
+import worona from 'worona-deps';
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -18,7 +18,7 @@ const routeChangeSucceed = () =>
   });
 const routeChangeFailed = () =>
   eventChannel(emitter => {
-    Router.onRouteChangeError = (asPath, error) => emitter({ asPath, error });
+    Router.onRouteChangeError = (error, asPath) => emitter({ asPath, error });
     return () => (Router.onRouteChangeError = null);
   });
 
