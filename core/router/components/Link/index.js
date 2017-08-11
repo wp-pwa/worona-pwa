@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { getSiteId } from '../../../settings/selectors';
 
 const Link = ({ query, as, children, siteId }) =>
-  <NextLink href={{ pathname: '/', query: { ...query, siteId } }} as={as}>
+  <NextLink href={{ pathname: '/', query: { ...query, siteId } }} as={as || '/'}>
     {children}
   </NextLink>
 
