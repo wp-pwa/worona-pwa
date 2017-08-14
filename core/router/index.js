@@ -4,7 +4,7 @@ import * as actions from './actions';
 import * as types from './types';
 import reducers from './reducers';
 import sagas from './sagas/client';
-import sagaCreators from './sagaCreators';
+import * as sagaHelpers from './sagaHelpers';
 import * as selectors from './selectors';
 import * as components from './components';
 
@@ -15,7 +15,7 @@ export default compose(
   setStatic('types', types),
   setStatic('reducers', reducers),
   setStatic('sagas', sagas),
-  setStatic('sagaCreators', sagaCreators),
+  setStatic('sagaHelpers', sagaHelpers),
   setStatic('selectors', selectors),
   setStatic('components', components),
 )(Router);
