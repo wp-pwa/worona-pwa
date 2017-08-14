@@ -1,3 +1,4 @@
+const path = require('path');
 const webpack = require('webpack');
 const isProd = process.env.NODE_ENV === 'production';
 const publicPath = process.env.PUBLIC_PATH || false;
@@ -10,10 +11,6 @@ module.exports = {
     if (publicPath) config.output.publicPath = publicPath + '/_next/webpack/';
     // Ignore server sagas.
     config.plugins.push(new webpack.IgnorePlugin(/sagas\/server\.js/));
-    config.resolve.modules = [
-      'node_modules',
-      './packages/**/node_modules',
-    ];
     return config;
   },
 };
