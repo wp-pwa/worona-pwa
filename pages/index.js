@@ -99,6 +99,7 @@ class Index extends Component {
       // Run and wait until all the server sagas have run.
       const startSagas = new Date();
       const sagaPromises = Object.values(serverSagas).map(saga => store.runSaga(saga, params).done);
+      store.dispatch(buildModule.actions.initServerSagas());
       await Promise.all(sagaPromises);
       console.log(`\nTime to run server sagas: ${new Date() - startSagas}ms\n`);
 
