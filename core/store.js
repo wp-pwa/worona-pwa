@@ -21,17 +21,8 @@ const serverMiddleware = [sagaMiddleware];
 // Add logger in dev mode.
 if (dev) {
   const { createLogger } = require('redux-logger');
-  clientMiddleware.push(createLogger({ diff: true }));
-  serverMiddleware.push(createLogger({
-    titleFormatter: ({ type }) => `\n\naction: ${type}\n`,
-    colors: {
-      title: false,
-      prevState: false,
-      action: false,
-      nextState: false,
-      error: false,
-    },
-  }));
+  clientMiddleware.push(createLogger({ diff: true, collapsed: true }));
+  serverMiddleware.push(createLogger({ diff: true, collapsed: true }));
 }
 
 export const initStore = ({ reducer, initialState = {}, sagas }) => {
