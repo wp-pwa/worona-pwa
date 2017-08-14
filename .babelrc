@@ -17,6 +17,12 @@
       {
         "id": ["lodash", "recompose"]
       }
+    ],
+    [
+      "resolver",
+      {
+        "resolveDirs": [ "packages/wp-org-connection-app-extension-worona/node_modules" ]
+      }
     ]
   ]
 }
