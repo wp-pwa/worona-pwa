@@ -27,6 +27,8 @@ export const packages = {
     importPackage: () => import('../packages/wp-org-connection-app-extension-worona/src/pwa'),
     requirePackage: () =>
       eval('require("../packages/wp-org-connection-app-extension-worona/src/pwa")'),
+    importServerSagas: () =>
+      import('../packages/wp-org-connection-app-extension-worona/src/pwa/sagas/server'),
   },
   'not-used-app-extension-worona': {
     namespace: 'notUsed',
