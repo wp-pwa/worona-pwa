@@ -13,5 +13,5 @@ export function* isCors() {
   const getSetting = dep('settings', 'selectorCreators', 'getSetting');
   const url = yield select(getSetting('generalSite', 'url'));
   // Only in case of a https connection and a http WordPres, cors is needed.
-  return url.startsWith('http') && window.location.host === 'https';
+  return url.startsWith('http://') && window.location.host === 'https';
 }
