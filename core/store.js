@@ -22,25 +22,28 @@ const serverMiddleware = [sagaMiddleware];
 if (dev) {
   const { createLogger } = require('redux-logger');
   clientMiddleware.push(createLogger({ diff: true }));
-  // serverMiddleware.push(createLogger({
-  //   titleFormatter: ({ type }) => `\n\naction: ${type}\n`,
-  //   colors: {
-  //     title: false,
-  //     prevState: false,
-  //     action: false,
-  //     nextState: false,
-  //     error: false,
-  //   },
-  // }));
+  serverMiddleware.push(createLogger({
+    titleFormatter: ({ type }) => `\n\naction: ${type}\n`,
+    colors: {
+      title: false,
+      prevState: false,
+      action: false,
+      nextState: false,
+      error: false,
+    },
+  }));
 }
 
 export const initStore = ({ reducer, initialState = {}, sagas }) => {
   // Create store for the server.
   if (typeof window === 'undefined') {
-    return {
+    store = {
       ...createStore(reducer, initialState, compose(applyMiddleware(...serverMiddleware))),
       runSaga: sagaMiddleware.run,
     };
+    // Add it to worona.
+    worona.store = store;
+    return store;
   } else {
     // Create store for the client, only if it hasn't been created before.
     if (!store) {
