@@ -90,7 +90,7 @@ class Index extends Component {
       const store = initStore({ reducer: combineReducers(reducers) });
 
       // Add settings to the state.
-      store.dispatch(buildModule.actions.initServer());
+      store.dispatch(buildModule.actions.serverStarted());
       store.dispatch(settingsModule.actions.siteIdUpdated({ siteId: params.query.siteId }));
       const { query, pathname, asPath } = params;
       store.dispatch(routerModule.actions.routeChangeSucceed({ query, pathname, asPath }));
@@ -100,9 +100,11 @@ class Index extends Component {
       // Run and wait until all the server sagas have run.
       const startSagas = new Date();
       const sagaPromises = Object.values(serverSagas).map(saga => store.runSaga(saga, params).done);
-      store.dispatch(buildModule.actions.initServerSagas());
+      store.dispatch(buildModule.actions.serverSagasInitialized());
       await Promise.all(sagaPromises);
-      console.log(`\nTime to run server sagas: ${new Date() - startSagas}ms\n`);
+      store.dispatch(
+        buildModule.actions.serverFinished({ timeToRunSagas: new Date() - startSagas })
+      );
 
       // Return server props.
       return { initialState: store.getState(), activatedPackages };

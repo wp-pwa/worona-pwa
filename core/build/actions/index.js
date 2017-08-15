@@ -5,14 +5,19 @@ export const activatedPackagesUpdated = ({ packages }) => ({
   packages,
 });
 
-export const initServer = () => ({
-  type: types.INIT_SERVER,
+export const serverStarted = () => ({
+  type: types.SERVER_STARTED,
 });
 
-export const initServerSagas = () => ({
-  type: types.INIT_SERVER_SAGAS,
+export const serverFinished = ({ timeToRunSagas }) => ({
+  type: types.SERVER_FINISHED,
+  timeToRunSagas,
 });
 
-export const initClientSagas = () => ({
-  type: types.INIT_CLIENT_SAGAS,
+export const serverSagasInitialized = () => ({
+  type: types.SERVER_SAGAS_INITIALIZED,
+});
+
+export const clientSagasInitialized = () => ({
+  type: types.CLIENT_SAGAS_INITIALIZED,
 });
