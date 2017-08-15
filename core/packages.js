@@ -15,12 +15,6 @@ export const packages = {
     importServerSagas: () =>
       import('../packages/general-app-extension-worona/src/pwa/sagas/server'),
   },
-  'starter-app-theme-worona': {
-    namespace: 'theme',
-    DynamicComponent: dynamic(import('../packages/starter-app-theme-worona/src/pwa')),
-    importPackage: () => import('../packages/starter-app-theme-worona/src/pwa'),
-    requirePackage: () => eval('require("../packages/starter-app-theme-worona/src/pwa")'),
-  },
   'wp-org-connection-app-extension-worona': {
     namespace: 'connection',
     DynamicComponent: dynamic(import('../packages/wp-org-connection-app-extension-worona/src/pwa')),
@@ -30,11 +24,11 @@ export const packages = {
     importServerSagas: () =>
       import('../packages/wp-org-connection-app-extension-worona/src/pwa/sagas/server'),
   },
-  'not-used-app-extension-worona': {
-    namespace: 'notUsed',
-    DynamicComponent: dynamic(import('../packages/not-used-app-extension-worona/src/pwa')),
-    importPackage: () => import('../packages/not-used-app-extension-worona/src/pwa'),
-    requirePackage: () => eval('require("../packages/not-used-app-extension-worona/src/pwa")'),
+  'starter-app-theme-worona': {
+    namespace: 'theme',
+    DynamicComponent: dynamic(import('../packages/starter-app-theme-worona/src/pwa')),
+    importPackage: () => import('../packages/starter-app-theme-worona/src/pwa'),
+    requirePackage: () => eval('require("../packages/starter-app-theme-worona/src/pwa")'),
   },
 };
 
