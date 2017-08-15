@@ -21,7 +21,10 @@
     [
       "resolver",
       {
-        "resolveDirs": [ "packages/wp-org-connection-app-extension-worona/node_modules" ]
+        "resolveDirs": [
+          "packages/wp-org-connection-app-extension-worona/node_modules",
+          "packages/saturn-app-theme-worona/node_modules"
+         ]
       }
     ]
   ]
