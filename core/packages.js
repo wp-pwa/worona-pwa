@@ -30,6 +30,12 @@ export const packages = {
     importPackage: () => import('../packages/starter-app-theme-worona/src/pwa'),
     requirePackage: () => eval('require("../packages/starter-app-theme-worona/src/pwa")'),
   },
+  'saturn-app-theme-worona': {
+    namespace: 'theme',
+    DynamicComponent: dynamic(import('../packages/saturn-app-theme-worona/src/pwa')),
+    importPackage: () => import('../packages/saturn-app-theme-worona/src/pwa'),
+    requirePackage: () => eval('require("../packages/saturn-app-theme-worona/src/pwa")'),
+  },
 };
 
 const App = ({ pkgs, theme, type }) => {
