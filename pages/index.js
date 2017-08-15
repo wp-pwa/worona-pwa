@@ -90,6 +90,7 @@ class Index extends Component {
       const store = initStore({ reducer: combineReducers(reducers) });
 
       // Add settings to the state.
+      store.dispatch(buildModule.actions.initServer());
       store.dispatch(settingsModule.actions.siteIdUpdated({ siteId: params.query.siteId }));
       const { query, pathname, asPath } = params;
       store.dispatch(routerModule.actions.routeChangeSucceed({ query, pathname, asPath }));

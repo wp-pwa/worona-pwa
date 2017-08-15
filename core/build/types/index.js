@@ -1,3 +1,4 @@
 export const ACTIVATED_PACKAGES_UPDATED = 'build/ACTIVATED_PACKAGES_UPDATED';
 export const INIT_SERVER_SAGAS = 'build/INIT_SERVER_SAGAS';
 export const INIT_CLIENT_SAGAS = 'build/INIT_CLIENT_SAGAS';
+export const INIT_SERVER = 'build/INIT_SERVER';

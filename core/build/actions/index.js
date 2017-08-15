@@ -5,6 +5,10 @@ export const activatedPackagesUpdated = ({ packages }) => ({
   packages,
 });
 
+export const initServer = () => ({
+  type: types.INIT_SERVER,
+});
+
 export const initServerSagas = () => ({
   type: types.INIT_SERVER_SAGAS,
 });
