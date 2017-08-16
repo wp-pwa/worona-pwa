@@ -18,6 +18,10 @@ export const serverSagasInitialized = () => ({
   type: types.SERVER_SAGAS_INITIALIZED,
 });
 
+export const clientStarted = () => ({
+  type: types.CLIENT_STARTED,
+});
+
 export const clientSagasInitialized = () => ({
   type: types.CLIENT_SAGAS_INITIALIZED,
 });
