@@ -1,10 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import NextLink from '@worona/next/link';
 import dynamic from '@worona/next/dynamic';
-import { getPackages, getTheme } from './build/selectors';
-import { getType } from './router/selectors';
-import { dep } from 'worona-deps';
+import { getPackages } from './build/selectors';
 
 export const packages = {
   'general-app-extension-worona': {
@@ -38,20 +35,14 @@ export const packages = {
   },
 };
 
-const App = ({ pkgs, theme, type }) => {
-  const DynamicPackages = pkgs.map(name => packages[name].DynamicComponent);
-  const Theme = dep('theme', 'Theme');
-  return (
-    <div>
-      <Theme />
-      {/* Add all the dynamic components of the activated packages to make next SSR work. */}
-      {DynamicPackages.map((DynamicPackage, index) => <DynamicPackage key={index} />)}
-    </div>
-  );
-};
+const App = ({ pkgs }) =>
+  <div>
+    {/* Add all the dynamic components of the activated packages to make next SSR work. */}
+    {pkgs
+      .map(name => packages[name].DynamicComponent)
+      .map((DynamicPackage, index) => <DynamicPackage key={index} />)}
+  </div>;
 
 export default connect(state => ({
   pkgs: getPackages(state),
-  theme: getTheme(state),
-  type: getType(state),
 }))(App);
