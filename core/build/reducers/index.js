@@ -14,7 +14,13 @@ export const theme = (state = '', action) => {
   return state;
 };
 
+const ssr = (state = true, action) => {
+  if (action.type === types.CLIENT_REACT_RENDERED) return false;
+  return state;
+}
+
 export default combineReducers({
   extensions,
   theme,
+  ssr,
 });

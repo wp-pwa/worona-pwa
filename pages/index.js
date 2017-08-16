@@ -107,7 +107,7 @@ class Index extends Component {
       );
 
       // Return server props.
-      return { initialState: store.getState(), activatedPackages };
+      return { initialState: store.getState(), activatedPackages, isServer: true };
 
       // Client first rendering.
     } else if (params.serverProps) {
@@ -119,15 +119,20 @@ class Index extends Component {
         if (module.sagas) clientSagas[packages[name].namespace] = module.sagas;
         addPackage({ namespace: packages[name].namespace, module });
       });
-      console.log(`Time to create store: ${new Date() - startStore}ms`);
+      if (dev) console.log(`Time to create store: ${new Date() - startStore}ms`);
     }
 
     // Client, rest of the renders.
-    return {};
+    return { isServer: false };
   }
 
   static runInitialPropsAgain({ serverProps }) {
     return true;
+  }
+
+  componentDidMount() {
+    if (!this.props.isServer)
+      this.store.dispatch(buildModule.actions.clientReactRendered());
   }
 
   render() {

@@ -25,3 +25,7 @@ export const clientStarted = () => ({
 export const clientSagasInitialized = () => ({
   type: types.CLIENT_SAGAS_INITIALIZED,
 });
+
+export const clientReactRendered = () => ({
+  type: types.CLIENT_REACT_RENDERED,
+});
