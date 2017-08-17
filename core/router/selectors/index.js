@@ -7,29 +7,29 @@ export const getPathname = state => state.router.pathname;
 export const getType = createSelector(
   getQuery,
   query => {
-    const { p, cat, tag, author, page_id, s, attachment_id } = query;
-    if (p) return 'p';
-    else if (cat) return 'cat';
+    const { post, page, category, tag, author, search, media } = query;
+    if (post) return 'post';
+    else if (page) return 'page';
+    else if (category) return 'category';
     else if (tag) return 'tag';
     else if (author) return 'author';
-    else if (page_id) return 'page_id';
-    else if (s) return 's';
-    else if (attachment_id) return 'attachment_id';
-    else return 'latest_posts';
-    }
+    else if (search) return 'search';
+    else if (media) return 'media';
+    else return 'latest';
+  }
 );
 
 export const getId = createSelector(
   getQuery,
   query => {
-    const { p, cat, tag, author, page_id, s, attachment_id } = query;
-    if (p) return parseInt(p);
-    else if (cat) return parseInt(cat);
+    const { post, page, category, tag, author, search, media } = query;
+    if (post) return parseInt(post);
+    else if (page) return parseInt(page);
+    else if (category) return parseInt(category);
     else if (tag) return parseInt(tag);
     else if (author) return parseInt(author);
-    else if (page_id) return parseInt(page_id);
-    else if (s) return parseInt(s);
-    else if (attachment_id) return parseInt(attachment_id);
+    else if (search) return parseInt(search);
+    else if (media) return parseInt(media);
     else return 0;
     }
 );
