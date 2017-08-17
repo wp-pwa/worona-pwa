@@ -21,12 +21,6 @@ export const packages = {
     importServerSagas: () =>
       import('../packages/wp-org-connection-app-extension-worona/src/pwa/sagas/server'),
   },
-  'starter-app-theme-worona': {
-    namespace: 'theme',
-    DynamicComponent: dynamic(import('../packages/starter-app-theme-worona/src/pwa')),
-    importPackage: () => import('../packages/starter-app-theme-worona/src/pwa'),
-    requirePackage: () => eval('require("../packages/starter-app-theme-worona/src/pwa")'),
-  },
   'saturn-app-theme-worona': {
     namespace: 'theme',
     DynamicComponent: dynamic(import('../packages/saturn-app-theme-worona/src/pwa')),
