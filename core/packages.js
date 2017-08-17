@@ -26,6 +26,8 @@ export const packages = {
     DynamicComponent: dynamic(import('../packages/saturn-app-theme-worona/src/pwa')),
     importPackage: () => import('../packages/saturn-app-theme-worona/src/pwa'),
     requirePackage: () => eval('require("../packages/saturn-app-theme-worona/src/pwa")'),
+    importServerSagas: () =>
+      import('../packages/saturn-app-theme-worona/src/pwa/sagas/server'),
   },
 };
 
