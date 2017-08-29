@@ -28,7 +28,7 @@ export const getId = createSelector(
     else if (cat) return parseInt(cat);
     else if (tag) return parseInt(tag);
     else if (author) return parseInt(author);
-    else if (s) return parseInt(s);
+    else if (s) return s;
     else if (attachment_id) return parseInt(attachment_id);
     else return 0;
   }
