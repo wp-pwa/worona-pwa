@@ -5,15 +5,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "node server/index.js",
-    "dev:wp": "PUBLIC_PATH=http://localhost:3000 node server/index.js",
-    "dev:wp:debug": "PUBLIC_PATH=http://localhost:3000 node --inspect server/index.js",
-    "dev:debug": "node --inspect server/index.js",
-    "build": "next build",
-    "build:wp": "PUBLIC_PATH=http://localhost:3000 next build",
-    "start": "NODE_ENV=production node server/index.js",
-    "start:wp": "PUBLIC_PATH=http://localhost:3000 NODE_ENV=production node server/index.js",
-    "change-path": "node change-path.js"
+    "dev": "env-cmd env.config.js node server/index.js",
+    "dev:wp": "env-cmd env.config.js node server/index.js --wp",
+    "dev:debug": "env-cmd env.config.js node --inspect server/index.js",
+    "dev:wp:debug": "env-cmd env.config.js node --inspect server/index.js --wp",
+    "build": "env-cmd env.config.js next build --prod",
+    "build:wp": "env-cmd env.config.js next build --prod --wp",
+    "now-build": "env-cmd env.config.js next build --prod --now",
+    "start": "env-cmd env.config.js node server/index.js --prod",
+    "start:wp": "env-cmd env.config.js node server/index.js --prod --wp",
+    "now-start": "env-cmd env.config.js node server/index.js --prod --now"
   },
   "keywords": [],
   "author": "",
@@ -37,10 +38,9 @@
   },
   "devDependencies": {
     "babel-plugin-lodash": "^3.2.11",
-    "babel-plugin-module-resolver": "^2.7.1",
-    "babel-plugin-resolver": "^1.1.0",
     "babel-plugin-styled-components": "^1.1.7",
     "babel-preset-stage-0": "^6.24.1",
+    "env-cmd": "^5.1.0",
     "redux-devtools-extension": "^2.13.2",
     "redux-logger": "^3.0.6"
   }
