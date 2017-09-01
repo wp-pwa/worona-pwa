@@ -5,14 +5,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "install": "recursive-install --skip-root",
+    "rec-install": "recursive-install --skip-root",
     "dev": "env-cmd env.config.js node server/index.js",
     "dev:wp": "env-cmd env.config.js node server/index.js --wp",
     "dev:debug": "env-cmd env.config.js node --inspect server/index.js",
     "dev:wp:debug": "env-cmd env.config.js node --inspect server/index.js --wp",
     "build": "env-cmd env.config.js next build --prod",
     "build:wp": "env-cmd env.config.js next build --prod --wp",
-    "now-build": "npm run install && env-cmd env.config.js next build --prod",
+    "now-build": "npm run rec-install && env-cmd env.config.js next build --prod",
     "start": "env-cmd env.config.js node server/index.js --prod",
     "start:wp": "env-cmd env.config.js node server/index.js --prod --wp",
     "now-start": "env-cmd env.config.js node server/index.js --prod"
