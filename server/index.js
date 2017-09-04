@@ -7,7 +7,7 @@ const dev = process.env.NODE_ENV !== 'production';
 const publicPath = process.env.PUBLIC_PATH || false;
 
 // If we are in WordPress dev mode, change the paths. If not, remove the paths.
-publicPath ? changePath(publicPath) : changePath('');
+if (dev) publicPath ? changePath(publicPath) : changePath('');
 
 const app = next({ dev });
 const handle = app.getRequestHandler();
@@ -15,7 +15,7 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
   createServer((req, res) => {
     const parsedUrl = parse(req.url, true);
-    const { pathname, query } = parsedUrl;
+    const { query } = parsedUrl;
 
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
