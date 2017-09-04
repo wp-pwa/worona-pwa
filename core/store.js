@@ -1,7 +1,6 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import createSagaMiddleware from 'redux-saga';
-import { createLogger } from 'redux-logger';
 import worona from 'worona-deps';
 import { clientStarted, clientSagasInitialized } from './build/actions';
 
@@ -10,8 +9,6 @@ const dev = process.env.NODE_ENV !== 'production';
 let store = null;
 
 // Add Redux Dev Tools.
-const composeDevTools =
-  (typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 const composeEnhancers = composeWithDevTools({ serialize: false });
 
 // Init saga and create middlewares.
@@ -21,12 +18,12 @@ const serverMiddleware = [sagaMiddleware];
 
 // Add logger in dev mode.
 if (dev) {
-  const { createLogger } = require('redux-logger');
+  const { createLogger } = require('redux-logger'); // eslint-disable-line
   clientMiddleware.push(createLogger({ diff: true, collapsed: true }));
   serverMiddleware.push(createLogger({ diff: true, collapsed: true }));
 }
 
-export const initStore = ({ reducer, initialState = {}, sagas }) => {
+export default ({ reducer, initialState = {}, sagas }) => {
   // Create store for the server.
   if (typeof window === 'undefined') {
     store = {
@@ -36,24 +33,19 @@ export const initStore = ({ reducer, initialState = {}, sagas }) => {
     // Add it to worona.
     worona.store = store;
     return store;
-  } else {
-    // Create store for the client, only if it hasn't been created before.
-    if (!store) {
-      store = {
-        ...createStore(
-          reducer,
-          initialState,
-          composeEnhancers(applyMiddleware(...clientMiddleware))
-        ),
-        runSaga: sagaMiddleware.run,
-      };
-      // Add it to worona.
-      worona.store = store;
-      // Start all the client sagas.
-      store.dispatch(clientStarted());
-      if (sagas) Object.values(sagas).forEach(saga => store.runSaga(saga));
-      store.dispatch(clientSagasInitialized());
-    }
-    return store;
   }
+  // Create store for the client, only if it hasn't been created before.
+  if (!store) {
+    store = {
+      ...createStore(reducer, initialState, composeEnhancers(applyMiddleware(...clientMiddleware))),
+      runSaga: sagaMiddleware.run,
+    };
+    // Add it to worona.
+    worona.store = store;
+    // Start all the client sagas.
+    store.dispatch(clientStarted());
+    if (sagas) Object.values(sagas).forEach(saga => store.runSaga(saga));
+    store.dispatch(clientSagasInitialized());
+  }
+  return store;
 };

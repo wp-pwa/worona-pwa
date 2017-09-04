@@ -1,4 +1,6 @@
+/* eslint-disable no-eval */
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import dynamic from '@worona/next/dynamic';
 import { getPackages } from './build/selectors';
@@ -35,9 +37,12 @@ const App = ({ pkgs }) =>
   <div>
     {/* Add all the dynamic components of the activated packages to make next SSR work. */}
     {pkgs
-      .map(name => packages[name].DynamicComponent)
-      .map((DynamicPackage, index) => <DynamicPackage key={index} />)}
+      .map(name => ({ DynamicPackage: packages[name].DynamicComponent, name }))
+      .map(({ DynamicPackage, name }) => <DynamicPackage key={name} />)}
   </div>;
+App.propTypes = {
+  pkgs: PropTypes.arrayOf(PropTypes.string).isRequired,
+}
 
 export default connect(state => ({
   pkgs: getPackages(state),

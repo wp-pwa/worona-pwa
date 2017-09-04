@@ -1,25 +1,23 @@
 import Router from '@worona/next/router';
 import { fork, take, put, race, all } from 'redux-saga/effects';
+import worona from 'worona-deps';
 import { eventChannel } from 'redux-saga';
 import * as actions from '../actions';
-import worona from 'worona-deps';
-
-const dev = process.env.NODE_ENV !== 'production';
 
 const routeChangeRequested = () =>
   eventChannel(emitter => {
     Router.onRouteChangeStart = asPath => emitter({ asPath });
-    return () => (Router.onRouteChangeStart = null);
+    return () => { Router.onRouteChangeStart = null };
   });
 const routeChangeSucceed = () =>
   eventChannel(emitter => {
     Router.onRouteChangeComplete = asPath => emitter({ asPath });
-    return () => (Router.onRouteChangeComplete = null);
+    return () => { Router.onRouteChangeComplete = null };
   });
 const routeChangeFailed = () =>
   eventChannel(emitter => {
     Router.onRouteChangeError = (error, asPath) => emitter({ asPath, error });
-    return () => (Router.onRouteChangeError = null);
+    return () => { Router.onRouteChangeError = null };
   });
 
 const getPath = () =>

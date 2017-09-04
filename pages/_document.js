@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/html-has-lang */
+import React from 'react';
 import Document, { Head, Main, NextScript } from '@worona/next/document'
 import { ServerStyleSheet } from 'styled-components';
 

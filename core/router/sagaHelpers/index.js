@@ -4,7 +4,7 @@ import { dep } from 'worona-deps';
 
 export function* prefetch({ dynamicImport, ms }) {
   if (ms) yield delay(ms);
-  yield call(module);
+  yield call(dynamicImport);
 }
 
 export function* isCors() {

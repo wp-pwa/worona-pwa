@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux';
 import * as types from '../types';
 
-export const siteId = (state = '', { type, siteId }) => {
-  if (type === types.SITE_ID_UPDATED)
-    return siteId;
+export const siteId = (state = '', action) => {
+  if (action.type === types.SITE_ID_UPDATED)
+    return action.siteId;
   return state;
 }
 

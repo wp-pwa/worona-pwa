@@ -1,18 +1,18 @@
 import { combineReducers } from 'redux';
 import * as types from '../types';
 
-export const asPath = (state = {}, { type, asPath }) => {
-  if (type === types.ROUTE_CHANGE_SUCCEED) return asPath;
+export const asPath = (state = {}, action) => {
+  if (action.type === types.ROUTE_CHANGE_SUCCEED) return action.asPath;
   return state;
 };
 
-export const query = (state = {}, { type, query }) => {
-  if (type === types.ROUTE_CHANGE_SUCCEED) return query;
+export const query = (state = {}, action) => {
+  if (action.type === types.ROUTE_CHANGE_SUCCEED) return action.query;
   return state;
 };
 
-export const pathname = (state = {}, { type, pathname }) => {
-  if (type === types.ROUTE_CHANGE_SUCCEED) return pathname;
+export const pathname = (state = {}, action) => {
+  if (action.type === types.ROUTE_CHANGE_SUCCEED) return action.pathname;
   return state;
 };
 

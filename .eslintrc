@@ -3,6 +3,10 @@
   "extends": ["airbnb", "prettier", "prettier/react"],
   "rules": {
     "import/no-extraneous-dependencies": 0,
-    "react/jsx-filename-extension": 0
+    "react/jsx-filename-extension": 0,
+    "no-underscore-dangle": ["error", { "allow": [ "_id" ] }],
+  },
+  "globals": {
+    "window": true
   }
 }

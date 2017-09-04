@@ -1,6 +1,5 @@
+import React from 'react';
 import Head from '@worona/next/head';
-import Router from '@worona/next/router';
-import Link from '@worona/next/link';
 
 class Form extends React.Component {
   constructor(props) {
@@ -16,18 +15,16 @@ class Form extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    window.location.href = `/?siteId=${this.state.siteId}`;
+    window.location.href = `/?siteId=${this.state.siteId}`; // eslint-disable-line
   }
 
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <label>
-          Please enter your Site ID:
-          {' '}
-          <input type="text" value={this.state.siteId} onChange={this.handleChange} />
-        </label>
-        {' '}
+        <label htmlFor="siteId">
+          Please enter your Site ID:{' '}
+          <input name="siteId" type="text" value={this.state.siteId} onChange={this.handleChange} />
+        </label>{' '}
         <input type="submit" value="Submit" />
         <style jsx>{`
           input {
@@ -38,8 +35,6 @@ class Form extends React.Component {
     );
   }
 }
-
-const Input = () => <input type="text" value="" />;
 
 export default () =>
   <div>
