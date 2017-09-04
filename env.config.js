@@ -1,3 +1,4 @@
+/* eslint-disable */
 var argv = require('minimist')(process.argv.slice(2));
 
 // NODE_PATH
