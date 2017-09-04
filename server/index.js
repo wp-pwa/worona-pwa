@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const { createServer } = require('http');
 const { parse } = require('url');
 const next = require('@worona/next');
@@ -7,7 +8,8 @@ const dev = process.env.NODE_ENV !== 'production';
 const publicPath = process.env.PUBLIC_PATH || false;
 
 // If we are in WordPress dev mode, change the paths. If not, remove the paths.
-if (dev) publicPath ? changePath(publicPath) : changePath('');
+if (dev && publicPath) changePath(publicPath);
+else if (dev) changePath('');
 
 const app = next({ dev });
 const handle = app.getRequestHandler();
