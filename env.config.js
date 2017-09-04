@@ -12,9 +12,6 @@ module.exports.NODE_PATH =
 if (argv.wp) {
   console.log('> Using PUBLIC_PATH=http://localhost:3000');
   module.exports.PUBLIC_PATH = 'http://localhost:3000';
-} else if (argv.now) {
-  console.log('> Using PUBLIC_PATH=https://pwa.worona.io');
-  module.exports.PUBLIC_PATH = 'https://pwa.worona.io';
 } else if (argv.public) {
   console.log('> Using PUBLIC_PATH=' + argv.public + '');
   module.exports.PUBLIC_PATH = argv.public;
