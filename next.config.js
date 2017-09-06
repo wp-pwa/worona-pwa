@@ -12,6 +12,7 @@ module.exports = {
     if (publicPath) config.output.publicPath = publicPath + '/_next/webpack/';
     // Ignore server sagas.
     config.plugins.push(new webpack.IgnorePlugin(/sagas\/server\.js/));
+    config.devtool = false
     return config;
   },
 };

@@ -21,7 +21,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@worona/next": "^3.0.3",
+    "@worona/next": "^3.2.1",
     "lodash": "^4.17.4",
     "normalizr": "^3.2.3",
     "promise-props": "^1.0.0",
@@ -31,11 +31,11 @@
     "recompose": "^0.23.5",
     "redux": "^3.7.1",
     "redux-saga": "^0.15.4",
+    "replace-in-file": "^2.5.3",
     "reselect": "^3.0.1",
     "styled-components": "^2.1.1",
     "superagent": "^3.5.2",
-    "worona-deps": "^2.0.3",
-    "replace-in-file": "^2.5.3"
+    "worona-deps": "^2.0.3"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
