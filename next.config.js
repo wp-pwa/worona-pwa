@@ -10,7 +10,7 @@ module.exports = {
   assetPrefix: publicPath || '',
   webpack: (config, { dev }) => {
     // We need this publicPath in order to make HMR work.
-    if (publicPath) config.output.publicPath = publicPath + '/_next/' + woronaVersion + '/webpack/';
+    if (publicPath) config.output.publicPath = publicPath + config.output.publicPath;
     // Ignore server sagas.
     config.plugins.push(new webpack.IgnorePlugin(/sagas\/server\.js/));
     config.devtool = false
