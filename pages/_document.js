@@ -1,15 +1,15 @@
 /* eslint-disable jsx-a11y/html-has-lang */
 import React from 'react';
-import Document, { Head, Main, NextScript } from '@worona/next/document'
+import Document, { Head, Main, NextScript } from '@worona/next/document';
 import { ServerStyleSheet } from 'styled-components';
 
 export default class MyDocument extends Document {
-  static async getInitialProps (...args) {
+  static async getInitialProps(...args) {
     const documentProps = await super.getInitialProps(...args);
-    return { ...documentProps }
+    return { ...documentProps };
   }
 
-  render () {
+  render() {
     const sheet = new ServerStyleSheet();
     const main = sheet.collectStyles(<Main />);
     const styleTags = sheet.getStyleElement();
@@ -17,16 +17,18 @@ export default class MyDocument extends Document {
       <html>
         <Head>
           <title>Worona</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+          />
+          <meta name="HandheldFriendly" content="true" />
           {styleTags}
         </Head>
         <body>
-          <div className='root'>
-            {main}
-          </div>
+          <div className="root">{main}</div>
           <NextScript />
         </body>
       </html>
-    )
+    );
   }
 }
