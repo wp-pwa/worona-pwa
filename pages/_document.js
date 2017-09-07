@@ -2,6 +2,7 @@
 import React from 'react';
 import Document, { Head, Main, NextScript } from '@worona/next/document';
 import { ServerStyleSheet } from 'styled-components';
+import gtmParts from 'react-google-tag-manager';
 
 export default class MyDocument extends Document {
   static async getInitialProps(...args) {
@@ -13,6 +14,12 @@ export default class MyDocument extends Document {
     const sheet = new ServerStyleSheet();
     const main = sheet.collectStyles(<Main />);
     const styleTags = sheet.getStyleElement();
+
+    // Google Tag Manager Props
+    const id = 'GTM-KBSB5N';
+    const { scriptAsReact, noScriptAsReact } = gtmParts({ id });
+    // End Google Tag Manager Props
+
     return (
       <html>
         <Head>
@@ -23,8 +30,12 @@ export default class MyDocument extends Document {
           />
           <meta name="HandheldFriendly" content="true" />
           {styleTags}
+          {/* Google Tag Manager */}
+          {scriptAsReact()}
         </Head>
         <body>
+          {/* Google Tag Manager (noscript) */}
+          {noScriptAsReact()}
           <div className="root">{main}</div>
           <NextScript />
         </body>
