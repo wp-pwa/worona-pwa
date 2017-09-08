@@ -10,8 +10,8 @@ module.exports.NODE_PATH =
 
 // PUBLIC_PATH
 if (argv.wp) {
-  console.log('> Using PUBLIC_PATH=http://localhost:3000');
-  module.exports.PUBLIC_PATH = 'http://localhost:3000';
+  console.log('> Using PUBLIC_PATH=https://localhost:3000');
+  module.exports.PUBLIC_PATH = 'https://localhost:3000';
 } else if (argv.public) {
   console.log('> Using PUBLIC_PATH=' + argv.public + '');
   module.exports.PUBLIC_PATH = argv.public;
