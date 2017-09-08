@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { normalize } from 'normalizr';
 import request from 'superagent';
-import { addPackage } from 'worona-deps';
+import worona, { addPackage } from 'worona-deps';
 import promiseProps from 'promise-props';
 import initStore from '../core/store';
 import reducers from '../core/reducers';
@@ -15,6 +15,8 @@ import buildModule from '../core/build';
 import routerModule from '../core/router';
 import settingsModule from '../core/settings';
 import App, { packages } from '../core/packages';
+
+worona.publicPath = process.env.PUBLIC_PATH;
 
 addPackage({ namespace: 'build', module: buildModule });
 addPackage({ namespace: 'router', module: routerModule });
