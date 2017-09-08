@@ -16,7 +16,7 @@ export default class MyDocument extends Document {
     const styleTags = sheet.getStyleElement();
 
     // Google Tag Manager Props
-    const id = 'GTM-KBSB5N';
+    const id = 'GTM-K3S2BMT';
     const { scriptAsReact, noScriptAsReact } = gtmParts({ id });
     // End Google Tag Manager Props
 
