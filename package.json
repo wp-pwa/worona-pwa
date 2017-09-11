@@ -27,6 +27,7 @@
     "promise-props": "^1.0.0",
     "react": "^15.6.1",
     "react-dom": "^15.5.4",
+    "react-google-tag-manager": "^2.1.0",
     "react-redux": "^5.0.5",
     "recompose": "^0.23.5",
     "redux": "^3.7.1",
