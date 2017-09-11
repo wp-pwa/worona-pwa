@@ -35,18 +35,17 @@ const getUrlAndTitle = query => {
   return { url, title };
 };
 
-export function* virtualPageView(customDimValues) {
+export function* virtualPageView() {
   const getSetting = dep('settings', 'selectorCreators', 'getSetting');
-  const query = yield select(deps('', 'selectors', 'getURLQueries'));
+  const query = yield select(dep('router', 'selectors', 'getQuery'));
   const siteName = yield select(getSetting('generalSite', 'name'));
+  const siteUrl = yield select(getSetting('generalSite', 'url'));
   const { url, title } = getUrlAndTitle(query);
 
   const virtualPage = {
     title: `${siteName} - ${title}`,
     url: `${siteUrl}${url}`,
-    customDimValues,
   };
-  console.log('SEND VIRTUAL PAGE VIEW', virtualPage);
   window.dataLayer.push({ event: 'virtualPageView', virtualPage });
 }
 
@@ -60,13 +59,12 @@ export default function* gtmSagas() {
   const siteId = yield select(getSetting('generalSite', '_id'));
   const userIds = yield select(getSetting('generalSite', 'userIds'));
   const theme = (yield select(getSetting('theme', 'woronaInfo'))).name;
-  const extensions = Object.values(yield select(getSetting('theme', 'woronaInfo'))).toString();
-  const viewType = /^(pre)?dashboard\./.test(window.location.host) ? 'preview' : 'pwa';
+  const extensions = (yield select(dep('build', 'selectors', 'getPackages'))).toString();
+  const pageType = /^(pre)?dashboard\./.test(window.location.host) ? 'preview' : 'pwa';
   const plan = 'enterprise';
 
-  const customDimValues = { siteId, userIds, theme, extensions, viewType, plan };
-  console.log('CUSTOM DIM VALUES', customDimValues);
-  window.dataLayer.push({ event: 'pageViewDimensions', customDimValues });
+  const values = { siteId, userIds, theme, extensions, pageType, plan };
+  window.dataLayer.push({ event: 'pageViewDimensions', values });
 
   yield fork(function* firstVirtualPageView() {
     yield call(virtualPageView);

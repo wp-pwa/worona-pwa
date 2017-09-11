@@ -3,6 +3,7 @@ import { fork, take, put, race, all } from 'redux-saga/effects';
 import worona from 'worona-deps';
 import { eventChannel } from 'redux-saga';
 import * as actions from '../actions';
+import gtmSagas from './gtm';
 
 const routeChangeRequested = () =>
   eventChannel(emitter => {
@@ -54,5 +55,8 @@ function* routeChangeSaga() {
 }
 
 export default function* routerClientSagas() {
-  yield all([fork(routeChangeSaga)]);
+  yield all([
+    fork(routeChangeSaga),
+    fork(gtmSagas),
+  ]);
 }
