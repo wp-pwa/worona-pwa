@@ -1,14 +1,7 @@
-/* eslint-disable no-console */
-const { createServer } = require('https');
-const fs = require('fs');
+/* eslint-disable no-console, global-require */
 const { parse } = require('url');
 const next = require('@worona/next');
 const changePath = require('./change-path');
-
-const options = {
-  key: fs.readFileSync('./server/worona.localhost'),
-  cert: fs.readFileSync('./server/worona.localhost.crt'),
-};
 
 const dev = process.env.NODE_ENV !== 'production';
 const publicPath = process.env.PUBLIC_PATH || false;
@@ -20,8 +13,23 @@ else if (dev) changePath('');
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
+// Create a https server if we are not in now.
+const createServer = handler => {
+  if (process.env.NOW) {
+    const server = require('http').createServer;
+    return server(handler);
+  }
+  const server = require('https').createServer;
+  const readFileSync = require('fs').readFileSync;
+  const options = {
+    key: readFileSync('./server/worona.localhost'),
+    cert: readFileSync('./server/worona.localhost.crt'),
+  };
+  return server(options, handler);
+}
+
 app.prepare().then(() => {
-  createServer(options, (req, res) => {
+  createServer((req, res) => {
     const parsedUrl = parse(req.url, true);
     const { query } = parsedUrl;
 
