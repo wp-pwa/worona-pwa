@@ -15,7 +15,8 @@
     "start": "env-cmd ./env.config.js node server/index.js --prod",
     "start:wp": "env-cmd ./env.config.js node server/index.js --prod --wp",
     "now-build": "npm run rec-install && env-cmd ./env.config.js next build --prod",
-    "now-start": "env-cmd ./env.config.js node server/index.js --prod"
+    "now-start": "env-cmd ./env.config.js node server/index.js --prod",
+    "fix-permissions": "chmod -R u+x node_modules/@worona/next/dist/bin"
   },
   "keywords": [],
   "author": "",
