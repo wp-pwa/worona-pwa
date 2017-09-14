@@ -1,8 +1,8 @@
 /* eslint-disable */
-// Uglify "npx uglify-js go-back-to-worona.js --output go-back-to-worona.min.js --compress --mangle"
+// Uglify "npx uglify-js static/go-back-to-worona.js --output static/go-back-to-worona.min.js --compress --mangle"
 (function(document, window) {
-  function loadBackToPwaButton() {
-    window.scrollTo(0,0);
+  function showPwaButton() {
+    window.scrollTo(0, 0);
     var button = document.createElement('div');
     button.id = 'back-to-pwa';
     button.style =
@@ -30,10 +30,11 @@
     document.body.appendChild(button);
   }
 
-  var readyStateCheckInterval = setInterval(function() {
-    if (document.readyState === 'complete') {
-      clearInterval(readyStateCheckInterval);
-      loadBackToPwaButton();
-    }
-  }, 100);
+  if (document.readyState === 'complete') {
+    showPwaButton();
+  } else {
+    window.addEventListener('load', function(event) {
+      showPwaButton();
+    });
+  }
 })(document, window);
