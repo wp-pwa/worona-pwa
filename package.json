@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "rec-install": "npm-recursive-install --skip-root",
+    "postinstall": "npm-recursive-install --skip-root",
     "dev": "env-cmd ./env.config.js node server/index.js",
     "dev:wp": "env-cmd ./env.config.js node server/index.js --wp",
     "dev:debug": "env-cmd ./env.config.js node --inspect server/index.js",
