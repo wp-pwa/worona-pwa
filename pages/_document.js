@@ -1,8 +1,7 @@
 /* eslint-disable jsx-a11y/html-has-lang */
 import React from 'react';
-import Document, { Head, Main, NextScript } from '@worona/next/document';
+import Document, { Head, Main } from '@worona/next/document';
 import { ServerStyleSheet } from 'styled-components';
-import gtmParts from 'react-google-tag-manager';
 
 export default class MyDocument extends Document {
   static async getInitialProps(...args) {
@@ -15,28 +14,24 @@ export default class MyDocument extends Document {
     const main = sheet.collectStyles(<Main />);
     const styleTags = sheet.getStyleElement();
 
-    // Google Tag Manager Props
-    const id = 'GTM-K3S2BMT';
-    const { scriptAsReact, noScriptAsReact } = gtmParts({ id });
-    // End Google Tag Manager Props
-
     return (
-      <html>
+      <html amp="">
         <Head>
+          <meta charSet="utf-8" />
           <meta
             name="viewport"
             content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
           />
           <meta name="HandheldFriendly" content="true" />
+          <style amp-boilerplate="">{`body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}`}</style>
+          <noscript>
+            <style amp-boilerplate="">{`body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}`}</style>
+          </noscript>
+          <script async src="https://cdn.ampproject.org/v0.js" />
           {styleTags}
-          {/* Google Tag Manager */}
-          {scriptAsReact()}
         </Head>
         <body>
-          {/* Google Tag Manager (noscript) */}
-          {noScriptAsReact()}
           <div className="root">{main}</div>
-          <NextScript />
         </body>
       </html>
     );

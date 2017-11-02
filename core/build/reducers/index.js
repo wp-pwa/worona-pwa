@@ -3,8 +3,7 @@ import { omit, find } from 'lodash';
 import * as types from '../types';
 
 export const extensions = (state = [], action) => {
-  if (action.type === types.ACTIVATED_PACKAGES_UPDATED)
-    return omit(action.packages, ['theme']);
+  if (action.type === types.ACTIVATED_PACKAGES_UPDATED) return omit(action.packages, ['theme']);
   return state;
 };
 
@@ -17,10 +16,13 @@ export const theme = (state = '', action) => {
 const ssr = (state = true, action) => {
   if (action.type === types.CLIENT_REACT_RENDERED) return false;
   return state;
-}
+};
+
+const amp = (state = true) => state;
 
 export default combineReducers({
   extensions,
   theme,
   ssr,
+  amp,
 });
