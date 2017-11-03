@@ -25,9 +25,9 @@ export const packages = {
   },
   'saturn-app-theme-worona': {
     namespace: 'theme',
-    DynamicComponent: dynamic(import('../packages/saturn-app-theme-worona/src/amp')),
-    importPackage: () => import('../packages/saturn-app-theme-worona/src/amp'),
-    requirePackage: () => eval('require("../packages/saturn-app-theme-worona/src/amp")'),
+    DynamicComponent: dynamic(import('../packages/saturn-app-theme-worona/src/pwa')),
+    importPackage: () => import('../packages/saturn-app-theme-worona/src/pwa'),
+    requirePackage: () => eval('require("../packages/saturn-app-theme-worona/src/pwa")'),
     importServerSagas: () =>
       import('../packages/saturn-app-theme-worona/src/pwa/sagas/server'),
   },
