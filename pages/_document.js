@@ -28,6 +28,11 @@ export default class MyDocument extends Document {
             <style amp-boilerplate="">{`body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}`}</style>
           </noscript>
           <script async src="https://cdn.ampproject.org/v0.js" />
+          <script
+            async
+            custom-element="amp-sidebar"
+            src="https://cdn.ampproject.org/v0/amp-sidebar-0.1.js"
+          />
           {styleTags}
         </Head>
         <body>
