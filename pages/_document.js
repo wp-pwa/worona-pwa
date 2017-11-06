@@ -2,6 +2,22 @@
 import React from 'react';
 import Document, { Head, Main } from '@worona/next/document';
 import { ServerStyleSheet } from 'styled-components';
+import { DOMProperty } from 'react-dom/lib/ReactInjection';
+import { properties as DOMProperties } from 'react-dom/lib/DOMProperty';
+
+if (typeof DOMProperties.amp === 'undefined') {
+  DOMProperty.injectDOMPropertyConfig({
+    Properties: { amp: DOMProperty.MUST_USE_ATTRIBUTE },
+    isCustomAttribute: attributeName => attributeName.startsWith('amp-'),
+  });
+}
+
+if (typeof DOMProperties.on === 'undefined') {
+  DOMProperty.injectDOMPropertyConfig({
+    Properties: { on: DOMProperty.MUST_USE_ATTRIBUTE },
+    isCustomAttribute: attributeName => attributeName === 'on',
+  });
+}
 
 export default class MyDocument extends Document {
   static async getInitialProps(...args) {
