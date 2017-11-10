@@ -66,6 +66,11 @@ export default class MyDocument extends Document {
             custom-element="amp-twitter"
             src="https://cdn.ampproject.org/v0/amp-twitter-0.1.js"
           />
+          <script
+            async
+            custom-element="amp-youtube"
+            src="https://cdn.ampproject.org/v0/amp-youtube-0.1.js"
+          />
           {styleTags}
         </Head>
         <body>
