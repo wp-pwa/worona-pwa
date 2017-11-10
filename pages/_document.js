@@ -63,8 +63,8 @@ export default class MyDocument extends Document {
           />
           <script
             async
-            custom-element="amp-twitter"
-            src="https://cdn.ampproject.org/v0/amp-twitter-0.1.js"
+            custom-element="amp-video"
+            src="https://cdn.ampproject.org/v0/amp-video-0.1.js"
           />
           <script
             async
@@ -73,8 +73,13 @@ export default class MyDocument extends Document {
           />
           <script
             async
-            custom-element="amp-video"
-            src="https://cdn.ampproject.org/v0/amp-video-0.1.js"
+            custom-element="amp-twitter"
+            src="https://cdn.ampproject.org/v0/amp-twitter-0.1.js"
+          />
+          <script
+            async
+            custom-element="amp-instagram"
+            src="https://cdn.ampproject.org/v0/amp-instagram-0.1.js"
           />
           {styleTags}
         </Head>
