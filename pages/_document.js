@@ -19,6 +19,13 @@ if (typeof DOMProperties.on === 'undefined') {
   });
 }
 
+if (typeof DOMProperties['custom-element'] === 'undefined') {
+  DOMProperty.injectDOMPropertyConfig({
+    Properties: { 'custom-element': DOMProperty.MUST_USE_ATTRIBUTE },
+    isCustomAttribute: attributeName => attributeName === 'custom-element',
+  });
+}
+
 export default class MyDocument extends Document {
   static async getInitialProps(...args) {
     const documentProps = await super.getInitialProps(...args);
@@ -53,6 +60,11 @@ export default class MyDocument extends Document {
             async
             custom-element="amp-social-share"
             src="https://cdn.ampproject.org/v0/amp-social-share-0.1.js"
+          />
+          <script
+            async
+            custom-element="amp-twitter"
+            src="https://cdn.ampproject.org/v0/amp-twitter-0.1.js"
           />
           {styleTags}
         </Head>
