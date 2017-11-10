@@ -49,6 +49,11 @@ export default class MyDocument extends Document {
             custom-element="amp-sidebar"
             src="https://cdn.ampproject.org/v0/amp-sidebar-0.1.js"
           />
+          <script
+            async
+            custom-element="amp-social-share"
+            src="https://cdn.ampproject.org/v0/amp-social-share-0.1.js"
+          />
           {styleTags}
         </Head>
         <body>
