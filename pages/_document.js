@@ -57,6 +57,16 @@ export default class MyDocument extends Document {
           />
           <script
             async
+            custom-element="amp-carousel"
+            src="https://cdn.ampproject.org/v0/amp-carousel-0.1.js"
+          />
+          <script
+            async
+            custom-element="amp-fit-text"
+            src="https://cdn.ampproject.org/v0/amp-fit-text-0.1.js"
+          />
+          <script
+            async
             custom-element="amp-social-share"
             src="https://cdn.ampproject.org/v0/amp-social-share-0.1.js"
           />
