@@ -4,8 +4,8 @@
     "stage-0"
   ],
   "plugins": [
+    "emotion",
     [
-      "emotion",
       "styled-components",
       {
         "ssr": true,
