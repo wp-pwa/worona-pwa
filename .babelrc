@@ -1,18 +1,7 @@
 {
-  "presets": [
-    "@worona/next/babel",
-    "stage-0"
-  ],
+  "presets": ["@worona/next/babel", "stage-0"],
   "plugins": [
     "emotion",
-    [
-      "styled-components",
-      {
-        "ssr": true,
-        "displayName": true,
-        "preprocess": false
-      }
-    ],
     [
       "lodash",
       {
